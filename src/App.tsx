@@ -14,6 +14,17 @@ import { LivraisonPage } from "@/pages/livraison";
 import { RetoursPage } from "@/pages/retours";
 import { ProfilePage } from "@/pages/profile";
 
+// Admin Imports
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { AdminDashboard } from "@/pages/admin/index";
+import { AdminProducts } from "@/pages/admin/products";
+import { AdminCategories } from "@/pages/admin/categories";
+import { AdminUsers } from "@/pages/admin/users";
+import { AdminOrders } from "@/pages/admin/orders";
+import { AdminOrderDetail } from "@/pages/admin/orders.$id";
+import { AdminPlaceholder } from "@/pages/admin/placeholder";
+import { AdminGuard } from "@/components/AdminGuard";
+
 function Layout() {
   return (
     <CartProvider>
@@ -73,6 +84,50 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminGuard />,
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          {
+            index: true,
+            element: <AdminDashboard />,
+          },
+          {
+            path: "products",
+            element: <AdminProducts />,
+          },
+          {
+            path: "categories",
+            element: <AdminCategories />,
+          },
+          {
+            path: "users",
+            element: <AdminUsers />,
+          },
+          {
+            path: "orders",
+            children: [
+              {
+                index: true,
+                element: <AdminOrders />,
+              },
+              {
+                path: ":id",
+                element: <AdminOrderDetail />,
+              },
+            ],
+          },
+          {
+            path: "settings",
+            element: <AdminPlaceholder title="Paramètres" />,
+          },
+        ],
       },
     ],
   },

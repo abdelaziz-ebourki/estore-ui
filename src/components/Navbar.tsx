@@ -1,14 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Search, User, Menu, Zap } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, Zap, Sun, Moon } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const { count } = useCart();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return (
+        document.documentElement.classList.contains("dark") ||
+        localStorage.getItem("theme") === "dark"
+      );
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,11 +43,11 @@ export function Navbar() {
   const links = [
     { to: "/", label: "Accueil" },
     { to: "/products", label: "Produits" },
-    { to: "/products", label: "Catégories" },
+    { to: "/admin", label: "Admin" },
   ] as const;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl transition-colors duration-300">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 md:px-6">
         <Link
           to="/"
@@ -58,12 +78,22 @@ export function Navbar() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Rechercher un produit, une marque…"
-              className="pl-9 bg-surface border-transparent"
+              className="pl-9 bg-surface border-transparent focus-visible:ring-primary/20"
             />
           </div>
         </form>
 
         <div className="flex items-center gap-1 md:ml-0 ml-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsDark(!isDark)}
+            className="rounded-full text-muted-foreground"
+            title={isDark ? "Passer au mode clair" : "Passer au mode sombre"}
+          >
+            {isDark ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5" />}
+          </Button>
+
           <Link
             to="/login"
             className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition"

@@ -23,7 +23,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const raw = typeof window !== "undefined" ? localStorage.getItem(KEY) : null;
       if (raw) setItems(JSON.parse(raw));
-    } catch {}
+    } catch (error) {
+      console.error("Failed to load cart from local storage", error);
+    }
   }, []);
 
   useEffect(() => {
