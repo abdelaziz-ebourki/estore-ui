@@ -4,6 +4,7 @@ import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -24,6 +25,10 @@ export function ProductDetailPage() {
     );
   }
 
+  const discount = product.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : 0;
+
   const similar = products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
@@ -43,7 +48,15 @@ export function ProductDetailPage() {
 
       <div className="grid lg:grid-cols-2 gap-12">
         <div>
-          <div className="overflow-hidden rounded-3xl border border-border bg-surface aspect-square">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-surface aspect-square">
+            {discount > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute left-6 top-6 z-10 rounded-full px-3 py-1 text-sm font-bold shadow-lg"
+              >
+                -{discount}%
+              </Badge>
+            )}
             <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
           </div>
           <div className="mt-3 grid grid-cols-4 gap-2">
@@ -80,6 +93,11 @@ export function ProductDetailPage() {
               <div className="text-lg text-muted-foreground line-through pb-1">
                 {product.oldPrice} €
               </div>
+            )}
+            {discount > 0 && (
+              <Badge variant="destructive" className="mb-2 rounded-full px-2 py-0.5 font-bold">
+                -{discount}%
+              </Badge>
             )}
           </div>
 

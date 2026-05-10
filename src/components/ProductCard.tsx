@@ -3,15 +3,28 @@ import { Star, ShoppingCart, Eye } from "lucide-react";
 import type { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 
 export function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
 
+  const discount = product.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : 0;
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40 hover:shadow-[var(--shadow-card)]">
       <div className="relative aspect-square overflow-hidden bg-surface">
+        {discount > 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute left-3 top-3 z-10 rounded-full px-2 py-0.5 font-bold"
+          >
+            -{discount}%
+          </Badge>
+        )}
         <img
-          src={product.image}
+          src={product.mainImage}
           alt={product.name}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
         />

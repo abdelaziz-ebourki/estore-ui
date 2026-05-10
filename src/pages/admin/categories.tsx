@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { initialCategories, Category, products as initialProducts } from "@/data/products";
+import { useState, useEffect } from "react";
+import { Category, Product } from "@/data/products";
+import { api } from "@/services/api";
 import {
   Table,
   TableBody,
@@ -10,7 +11,16 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Search, Edit2, Trash2, MoreVertical, FolderOpen, AlertCircle } from "lucide-react";
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  MoreVertical,
+  FolderOpen,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,12 +53,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
 export function AdminCategories() {
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
-  const [products] = useState(initialProducts);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [search, setSearch] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [errorAlert, setErrorAlert] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [categoriesData, productsData] = await Promise.all([
+          api.categories.list(),
+          api.products.list(),
+        ]);
+        setCategories(categoriesData);
+        setProducts(productsData);
+      } catch (error) {
+        toast.error("Erreur lors du chargement des catégories");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredCategories = categories.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
@@ -65,29 +96,51 @@ export function AdminCategories() {
     }
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (categoryToDelete) {
-      setCategories(categories.filter((c) => c.id !== categoryToDelete.id));
-      toast.success("Catégorie supprimée avec succès");
-      setCategoryToDelete(null);
+      try {
+        await api.categories.delete(categoryToDelete.id);
+        setCategories(categories.filter((c) => c.id !== categoryToDelete.id));
+        toast.success("Catégorie supprimée avec succès");
+        setCategoryToDelete(null);
+      } catch (error) {
+        toast.error("Erreur lors de la suppression");
+      }
     }
   };
 
-  const handleAddCategory = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddCategory = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newCategory: Category = {
-      id: `cat-${Math.random().toString(36).substring(7)}`,
-      name: formData.get("name") as string,
-      slug: (formData.get("name") as string).toLowerCase().replace(/\s+/g, "-"),
-      image: formData.get("image") as string,
-      description: formData.get("description") as string,
-    };
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const name = formData.get("name") as string;
+      const newCategoryData: Omit<Category, "id"> = {
+        name,
+        slug: name.toLowerCase().replace(/\s+/g, "-"),
+        image: formData.get("image") as string,
+        description: formData.get("description") as string,
+      };
 
-    setCategories([...categories, newCategory]);
-    setIsAddDialogOpen(false);
-    toast.success("Catégorie ajoutée avec succès");
+      const createdCategory = await api.categories.create(newCategoryData);
+      setCategories([...categories, createdCategory]);
+      setIsAddDialogOpen(false);
+      toast.success("Catégorie ajoutée avec succès");
+    } catch (error) {
+      toast.error("Erreur lors de l'ajout de la catégorie");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-muted-foreground animate-pulse">Chargement des catégories...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -149,8 +202,23 @@ export function AdminCategories() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="w-full sm:w-auto">
-                  Enregistrer
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsAddDialogOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Annuler
+                </Button>
+                <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Enregistrement...
+                    </>
+                  ) : (
+                    "Enregistrer"
+                  )}
                 </Button>
               </DialogFooter>
             </form>

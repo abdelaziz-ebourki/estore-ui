@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { initialProducts, Product, initialCategories } from "@/data/products";
+import { useState, useEffect } from "react";
+import { Product, Category } from "@/data/products";
+import { api } from "@/services/api";
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import {
   MoreVertical,
   Package,
   Image as ImageIcon,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -60,10 +62,32 @@ import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function AdminProducts() {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const [productsData, categoriesData] = await Promise.all([
+          api.products.list(),
+          api.categories.list(),
+        ]);
+        setProducts(productsData);
+        setCategories(categoriesData);
+      } catch (error) {
+        toast.error("Erreur lors du chargement des données");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredProducts = products.filter(
     (p) =>
@@ -72,45 +96,66 @@ export function AdminProducts() {
       p.category.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (productToDelete) {
-      setProducts(products.filter((p) => p.id !== productToDelete));
-      toast.success("Produit supprimé avec succès");
-      setProductToDelete(null);
+      try {
+        await api.products.delete(productToDelete);
+        setProducts(products.filter((p) => p.id !== productToDelete));
+        toast.success("Produit supprimé avec succès");
+        setProductToDelete(null);
+      } catch (error) {
+        toast.error("Erreur lors de la suppression");
+      }
     }
   };
 
-  const handleAddProduct = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAddProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData(e.currentTarget);
 
-    const additionalImages = (formData.get("additionalImages") as string)
-      .split(",")
-      .map((url) => url.trim())
-      .filter((url) => url !== "");
+      const additionalImages = (formData.get("additionalImages") as string)
+        .split(",")
+        .map((url) => url.trim())
+        .filter((url) => url !== "");
 
-    const oldPriceStr = formData.get("oldPrice") as string;
-    const oldPrice = oldPriceStr ? Number(oldPriceStr) : undefined;
+      const oldPriceStr = formData.get("oldPrice") as string;
+      const oldPrice = oldPriceStr ? Number(oldPriceStr) : undefined;
 
-    const newProduct: Product = {
-      id: Math.random().toString(36).substring(7),
-      name: formData.get("name") as string,
-      brand: formData.get("brand") as string,
-      category: formData.get("category") as string,
-      price: Number(formData.get("price")),
-      oldPrice: oldPrice,
-      stock: Number(formData.get("stock")),
-      mainImage: formData.get("mainImage") as string,
-      images: [formData.get("mainImage") as string, ...additionalImages],
-      description: formData.get("description") as string,
-      rating: 0,
-      specs: [],
-    };
+      const newProductData: Omit<Product, "id"> = {
+        name: formData.get("name") as string,
+        brand: formData.get("brand") as string,
+        category: formData.get("category") as string,
+        price: Number(formData.get("price")),
+        oldPrice: oldPrice,
+        stock: Number(formData.get("stock")),
+        mainImage: formData.get("mainImage") as string,
+        images: [formData.get("mainImage") as string, ...additionalImages],
+        description: formData.get("description") as string,
+        rating: 0,
+        specs: [],
+      };
 
-    setProducts([newProduct, ...products]);
-    setIsAddDialogOpen(false);
-    toast.success("Produit ajouté avec succès");
+      const createdProduct = await api.products.create(newProductData);
+      setProducts([createdProduct, ...products]);
+      setIsAddDialogOpen(false);
+      toast.success("Produit ajouté avec succès");
+    } catch (error) {
+      toast.error("Erreur lors de l'ajout du produit");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <p className="text-muted-foreground animate-pulse">Chargement des produits...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -168,7 +213,7 @@ export function AdminProducts() {
                           <SelectValue placeholder="Choisir" />
                         </SelectTrigger>
                         <SelectContent>
-                          {initialCategories.map((c) => (
+                          {categories.map((c) => (
                             <SelectItem key={c.id} value={c.name}>
                               {c.name}
                             </SelectItem>
@@ -252,11 +297,23 @@ export function AdminProducts() {
                     variant="outline"
                     onClick={() => setIsAddDialogOpen(false)}
                     className="h-12 px-8"
+                    disabled={isSubmitting}
                   >
                     Annuler
                   </Button>
-                  <Button type="submit" className="h-12 px-12 shadow-lg shadow-primary/20">
-                    Publier le produit
+                  <Button
+                    type="submit"
+                    className="h-12 px-12 shadow-lg shadow-primary/20"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Publication...
+                      </>
+                    ) : (
+                      "Publier le produit"
+                    )}
                   </Button>
                 </DialogFooter>
               </form>
