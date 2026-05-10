@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart, Eye } from "lucide-react";
+import { Star, ShoppingCart } from "lucide-react";
 import type { Product } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
@@ -13,7 +13,10 @@ export function ProductCard({ product }: { product: Product }) {
     : 0;
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40 hover:shadow-[var(--shadow-card)]">
+    <Link
+      to={`/products/${product.id}`}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40 hover:shadow-[var(--shadow-card)]"
+    >
       <div className="relative aspect-square overflow-hidden bg-surface">
         {discount > 0 && (
           <Badge
@@ -29,14 +32,10 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-2 p-4 transition duration-300 group-hover:translate-y-0">
-          <Link
-            to={`/products/${product.id}`}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm hover:bg-white transition"
-          >
-            <Eye className="h-4 w-4" />
-          </Link>
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               add(product);
               toast.success(`${product.name} ajouté`);
             }}
@@ -56,12 +55,9 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
-        <Link
-          to={`/products/${product.id}`}
-          className="mt-1 font-display font-semibold text-foreground hover:text-primary transition line-clamp-1"
-        >
+        <div className="mt-1 font-display font-semibold text-foreground group-hover:text-primary transition line-clamp-1">
           {product.name}
-        </Link>
+        </div>
 
         <div className="mt-auto pt-3 flex items-baseline gap-2">
           <span className="font-display text-lg font-bold">{product.price} €</span>
@@ -70,6 +66,6 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

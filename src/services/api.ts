@@ -9,7 +9,7 @@ import {
   type Order,
 } from "@/data/products";
 
-const DELAY = 500;
+const DELAY = 1000;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 

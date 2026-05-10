@@ -66,9 +66,9 @@ export function ProductsPage() {
 
             <FilterSection title="Prix">
               <Slider
-                min={0}
+                min={1}
                 max={2500}
-                step={50}
+                step={10}
                 value={price}
                 onValueChange={(v) => {
                   setPrice(v as [number, number]);

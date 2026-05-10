@@ -1,4 +1,5 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
@@ -26,6 +27,12 @@ import { AdminPlaceholder } from "@/pages/admin/placeholder";
 import { AdminGuard } from "@/components/AdminGuard";
 
 function Layout() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pathname]);
+
   return (
     <CartProvider>
       <div className="flex min-h-screen flex-col">
