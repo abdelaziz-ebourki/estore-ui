@@ -1,5 +1,11 @@
 import { useEffect } from "react";
-import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  useLocation,
+  ScrollRestoration,
+} from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
@@ -14,6 +20,8 @@ import { ContactPage } from "@/pages/contact";
 import { LivraisonPage } from "@/pages/livraison";
 import { RetoursPage } from "@/pages/retours";
 import { ProfilePage } from "@/pages/profile";
+import { ConfidentialitePage } from "@/pages/confidentialite";
+import { ConditionsPage } from "@/pages/conditions";
 
 // Admin Imports
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -27,15 +35,10 @@ import { AdminPlaceholder } from "@/pages/admin/placeholder";
 import { AdminGuard } from "@/components/AdminGuard";
 
 function Layout() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [pathname]);
-
   return (
     <CartProvider>
       <div className="flex min-h-screen flex-col">
+        <ScrollRestoration />
         <Navbar />
         <main className="flex-1">
           <Outlet />
@@ -91,6 +94,14 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "confidentialite",
+        element: <ConfidentialitePage />,
+      },
+      {
+        path: "conditions",
+        element: <ConditionsPage />,
       },
     ],
   },
