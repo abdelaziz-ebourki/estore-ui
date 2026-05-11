@@ -72,7 +72,7 @@ export function HomePage() {
       </section>
 
       {/* Popular products */}
-      <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">
+      <section id="popular-products" className="mx-auto max-w-7xl px-4 md:px-6 py-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
             <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight">

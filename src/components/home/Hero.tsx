@@ -3,6 +3,13 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 
 export function Hero() {
+  const scrollToProducts = () => {
+    const section = document.getElementById("popular-products");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 md:px-6 pt-12 pb-16 md:pt-20 md:pb-24">
@@ -29,12 +36,12 @@ export function Hero() {
               >
                 Voir les produits <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                to="/products"
+              <button
+                onClick={scrollToProducts}
                 className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold hover:bg-accent transition"
               >
                 Explorer les offres
-              </Link>
+              </button>
             </div>
             <div className="mt-10 grid grid-cols-3 gap-4 max-w-md">
               {[
