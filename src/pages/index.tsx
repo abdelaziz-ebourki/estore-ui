@@ -9,6 +9,7 @@ import { api } from "@/services/api";
 import { Hero } from "@/components/home/Hero";
 import { TrustStrip } from "@/components/home/TrustStrip";
 import { PromoSection } from "@/components/home/PromoSection";
+import { CategoryCard } from "@/components/home/CategoryCard";
 
 export function HomePage() {
   const [popular, setPopular] = useState<Product[]>([]);
@@ -33,8 +34,8 @@ export function HomePage() {
 
       {/* Categories */}
       <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-          <div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 text-center md:text-left">
+          <div className="w-full">
             <h2 className="font-display text-3xl md:text-5xl font-bold tracking-tight">
               Catégories
             </h2>
@@ -43,31 +44,9 @@ export function HomePage() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="flex flex-wrap justify-center gap-6">
           {categories.map((c) => (
-            <Link
-              key={c.slug}
-              to={`/products?category=${c.slug}`}
-              className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-0 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500"
-            >
-              <div className="aspect-[4/5] relative">
-                <img
-                  src={c.image}
-                  alt={c.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-6 w-full">
-                  <div className="font-display text-xl font-bold text-white group-hover:text-primary transition-colors">
-                    {c.name}
-                  </div>
-                  <div className="mt-2 text-[10px] text-white/70 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-300 font-bold uppercase tracking-widest">
-                    Découvrir <ArrowRight className="h-3 w-3" />
-                  </div>
-                </div>
-              </div>
-            </Link>
+            <CategoryCard key={c.slug} category={c} />
           ))}
         </div>
       </section>
@@ -93,13 +72,13 @@ export function HomePage() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="aspect-[3/4] rounded-3xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {popular.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

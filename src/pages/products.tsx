@@ -159,7 +159,7 @@ export function ProductsPage() {
               <p className="text-sm mt-1">Essayez d'ajuster vos critères de recherche.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
               {view.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

@@ -240,7 +240,7 @@ export function ProductDetailPage() {
             <h2 className="font-display text-3xl font-black">Produits similaires</h2>
             <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {similar.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
