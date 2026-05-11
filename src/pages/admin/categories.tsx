@@ -135,7 +135,7 @@ export function AdminCategories() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
         <p className="text-muted-foreground animate-pulse">Chargement des catégories...</p>
       </div>
@@ -162,7 +162,7 @@ export function AdminCategories() {
               Ajouter une catégorie
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-125">
             <form onSubmit={handleAddCategory}>
               <DialogHeader>
                 <DialogTitle>Ajouter une catégorie</DialogTitle>
@@ -196,7 +196,7 @@ export function AdminCategories() {
                   <Textarea
                     id="description"
                     name="description"
-                    className="col-span-3 min-h-[100px]"
+                    className="col-span-3 min-h-25"
                     required
                   />
                 </div>
@@ -230,7 +230,7 @@ export function AdminCategories() {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30 border-b-muted-foreground/10">
-              <TableHead className="w-[100px] font-semibold py-4">Aperçu</TableHead>
+              <TableHead className="w-25 font-semibold py-4">Aperçu</TableHead>
               <TableHead className="font-semibold">Catégorie</TableHead>
               <TableHead className="font-semibold hidden md:table-cell">Description</TableHead>
               <TableHead className="text-right font-semibold">Actions</TableHead>
@@ -252,7 +252,7 @@ export function AdminCategories() {
                     <span className="text-xs text-muted-foreground font-mono">{category.slug}</span>
                   </div>
                 </TableCell>
-                <TableCell className="max-w-[400px] hidden md:table-cell">
+                <TableCell className="max-w-100 hidden md:table-cell">
                   <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                     {category.description}
                   </p>
