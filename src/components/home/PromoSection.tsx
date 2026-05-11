@@ -32,7 +32,7 @@ export function PromoSection({ promos }: { promos: Product[] }) {
               Profitez de nos meilleures réductions sur les marques les plus prisées. Stock limité !
             </p>
             <Link
-              to="/products?discount=true"
+              to="/products?minDiscount=1"
               className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-sm font-bold text-primary shadow-xl hover:bg-opacity-90 transition transform hover:-translate-y-1 active:scale-95"
             >
               Voir les promos <ArrowRight className="h-4 w-4" />
