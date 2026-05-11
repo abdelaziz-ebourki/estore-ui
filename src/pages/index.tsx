@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { type Product, categories } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { api } from "@/services/api";
@@ -108,16 +109,26 @@ export function HomePage() {
             Inscrivez-vous pour recevoir les dernières nouveautés, des offres exclusives et des
             invitations à nos événements.
           </p>
-          <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              toast.success("Merci ! Vous êtes bien inscrit à notre newsletter.");
+            }}
+            className="mt-10 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto"
+          >
             <input
               type="email"
+              required
               placeholder="votre@email.com"
               className="flex-1 px-6 py-4 rounded-full bg-surface border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
             />
-            <button className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary-glow transition shadow-lg shadow-primary/20">
+            <button
+              type="submit"
+              className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary-glow transition shadow-lg shadow-primary/20"
+            >
               S'abonner
             </button>
-          </div>
+          </form>
           <p className="mt-4 text-xs text-muted-foreground">
             Pas de spam, promis. Vous pouvez vous désabonner à tout moment.
           </p>
