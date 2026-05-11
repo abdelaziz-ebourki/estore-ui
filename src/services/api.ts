@@ -19,6 +19,13 @@ export const api = {
       await sleep(DELAY);
       return [...initialProducts];
     },
+    popular: async (limit = 8): Promise<Product[]> => {
+      await sleep(DELAY);
+      // Simulate backend logic: sort by rating then stock
+      return [...initialProducts]
+        .sort((a, b) => b.rating - a.rating || b.stock - a.stock)
+        .slice(0, limit);
+    },
     get: async (id: string): Promise<Product | undefined> => {
       await sleep(DELAY);
       return initialProducts.find((p) => p.id === id);

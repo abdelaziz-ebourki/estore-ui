@@ -19,8 +19,11 @@ export function HomePage() {
   useEffect(() => {
     const loadHomeData = async () => {
       setIsLoading(true);
-      const allProducts = await api.products.list();
-      setPopular(allProducts.slice(0, 8));
+      const [popularProducts, allProducts] = await Promise.all([
+        api.products.popular(8),
+        api.products.list(),
+      ]);
+      setPopular(popularProducts);
       setPromos(allProducts.filter((p) => p.oldPrice).slice(0, 3));
       setIsLoading(false);
     };
