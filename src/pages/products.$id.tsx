@@ -185,7 +185,7 @@ export function ProductDetailPage() {
                 add(product);
                 toast.success(`${product.name} ajouté au panier`);
               }}
-              className="h-16 flex items-center justify-center gap-3 rounded-2xl bg-primary text-primary-foreground text-lg font-bold shadow-[var(--shadow-elegant)] hover:bg-primary-glow transition-all active:scale-95 group"
+              className="h-16 flex items-center justify-center gap-3 rounded-2xl bg-primary text-primary-foreground text-lg font-bold shadow-[--shadow-elegant] hover:bg-primary-glow transition-all active:scale-95 group"
             >
               <ShoppingCart className="h-6 w-6 group-hover:animate-bounce" />
               Ajouter au panier
@@ -238,7 +238,7 @@ export function ProductDetailPage() {
         <section className="mt-32">
           <div className="flex items-center gap-4 mb-10">
             <h2 className="font-display text-3xl font-black">Produits similaires</h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-border to-transparent" />
+            <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {similar.map((p) => (

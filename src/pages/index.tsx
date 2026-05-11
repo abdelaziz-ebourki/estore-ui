@@ -78,7 +78,7 @@ export function HomePage() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="aspect-[3/4] rounded-3xl bg-muted animate-pulse" />
+              <div key={i} className="aspect-3/4 rounded-3xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : (
@@ -92,7 +92,7 @@ export function HomePage() {
 
       {isLoading ? (
         <div className="mx-auto max-w-7xl px-4 md:px-6 py-16">
-          <div className="h-[400px] rounded-[3rem] bg-muted animate-pulse" />
+          <div className="h-100 rounded-[3rem] bg-muted animate-pulse" />
         </div>
       ) : (
         <PromoSection promos={promos} />
@@ -101,7 +101,7 @@ export function HomePage() {
       {/* Modern Newsletter/Newsletter CTA */}
       <section className="mx-auto max-w-7xl px-4 md:px-6 py-24">
         <div className="relative rounded-[3rem] bg-card border border-border p-8 md:p-20 text-center overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-20" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-linear-to-r from-transparent via-primary to-transparent opacity-20" />
           <h2 className="font-display text-3xl md:text-5xl font-bold max-w-2xl mx-auto leading-tight">
             Rejoignez le futur de la technologie.
           </h2>

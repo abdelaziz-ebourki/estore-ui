@@ -121,7 +121,7 @@ export function CheckoutPage() {
             <h2 className="font-display text-lg font-bold flex items-center gap-2 mb-6">
               <ShoppingBag className="h-5 w-5 text-primary" /> Résumé de la commande
             </h2>
-            <div className="space-y-4 max-h-[300px] overflow-auto pr-2 scrollbar-thin">
+            <div className="space-y-4 max-h-75 overflow-auto pr-2 scrollbar-thin">
               {items.map((item) => (
                 <div key={item.product.id} className="flex gap-3 text-sm">
                   <img

@@ -10,7 +10,7 @@ export function PromoSection({ promos }: { promos: Product[] }) {
 
   return (
     <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">
-      <div className="rounded-[2.5rem] bg-gradient-to-br from-primary to-primary-glow p-8 md:p-16 text-primary-foreground relative overflow-hidden shadow-2xl">
+      <div className="rounded-[2.5rem] bg-linear-to-br from-primary to-primary-glow p-8 md:p-16 text-primary-foreground relative overflow-hidden shadow-2xl">
         <div
           className="absolute inset-0 opacity-10"
           style={{

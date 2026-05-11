@@ -23,8 +23,8 @@ export function RegisterPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="rounded-[2.5rem] border border-border bg-card p-10 shadow-[var(--shadow-elegant)] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
+      <div className="rounded-[2.5rem] border border-border bg-card p-10 shadow-[--shadow-elegant] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-primary/50 via-primary to-primary/50" />
 
         <div className="flex flex-col items-center mb-8">
           <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
