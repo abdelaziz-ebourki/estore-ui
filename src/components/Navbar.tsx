@@ -43,7 +43,6 @@ export function Navbar() {
   const links = [
     { to: "/", label: "Accueil" },
     { to: "/products", label: "Produits" },
-    { to: "/admin", label: "Admin" },
   ] as const;
 
   return (
@@ -95,7 +94,7 @@ export function Navbar() {
           </Button>
 
           <Link
-            to="/login"
+            to="/profile"
             className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition"
           >
             <User className="h-5 w-5" />
@@ -133,11 +132,11 @@ export function Navbar() {
             </Link>
           ))}
           <Link
-            to="/login"
+            to="/profile"
             onClick={() => setOpen(false)}
             className="block text-sm font-medium text-foreground py-2"
           >
-            Connexion
+            Mon profil
           </Link>
         </div>
       )}
