@@ -20,8 +20,8 @@ import { ContactPage } from "@/pages/contact";
 import { LivraisonPage } from "@/pages/livraison";
 import { RetoursPage } from "@/pages/retours";
 import { ProfilePage } from "@/pages/profile";
-import { ConfidentialitePage } from "@/pages/confidentialite";
-import { ConditionsPage } from "@/pages/conditions";
+import { PrivacyPage } from "@/pages/privacy";
+import { TermsPage } from "@/pages/terms";
 
 // Admin Imports
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -96,12 +96,12 @@ const router = createBrowserRouter([
         element: <ProfilePage />,
       },
       {
-        path: "confidentialite",
-        element: <ConfidentialitePage />,
+        path: "privacy",
+        element: <PrivacyPage />,
       },
       {
-        path: "conditions",
-        element: <ConditionsPage />,
+        path: "terms",
+        element: <TermsPage />,
       },
     ],
   },

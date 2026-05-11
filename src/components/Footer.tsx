@@ -134,10 +134,10 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
           <p>© {year} TechStore. Tous droits réservés.</p>
           <div className="flex gap-6">
-            <Link to="/confidentialite" className="hover:text-foreground">
+            <Link to="/privacy" className="hover:text-foreground">
               Confidentialité
             </Link>
-            <Link to="/conditions" className="hover:text-foreground">
+            <Link to="/terms" className="hover:text-foreground">
               Conditions d'utilisation
             </Link>
           </div>
