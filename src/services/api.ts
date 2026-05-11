@@ -80,6 +80,13 @@ export const api = {
       if (idx > -1) initialCategories.splice(idx, 1);
     },
   },
+  newsletter: {
+    subscribe: async (email: string): Promise<{ success: boolean }> => {
+      await sleep(DELAY);
+      console.log(`Newsletter subscription: ${email}`);
+      return { success: true };
+    },
+  },
   users: {
     list: async (): Promise<User[]> => {
       await sleep(DELAY);

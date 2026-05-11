@@ -16,6 +16,8 @@ export function HomePage() {
   const [popular, setPopular] = useState<Product[]>([]);
   const [promos, setPromos] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
     const loadHomeData = async () => {
@@ -30,6 +32,20 @@ export function HomePage() {
     };
     loadHomeData();
   }, []);
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubscribing(true);
+    try {
+      await api.newsletter.subscribe(email);
+      toast.success("Merci ! Vous êtes bien inscrit à notre newsletter.");
+      setEmail("");
+    } catch {
+      toast.error("Erreur lors de l'inscription");
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
   return (
     <div className="bg-background">
@@ -110,23 +126,23 @@ export function HomePage() {
             invitations à nos événements.
           </p>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              toast.success("Merci ! Vous êtes bien inscrit à notre newsletter.");
-            }}
+            onSubmit={handleSubscribe}
             className="mt-10 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto"
           >
             <input
               type="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="votre@email.com"
               className="flex-1 px-6 py-4 rounded-full bg-surface border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
             />
             <button
               type="submit"
-              className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary-glow transition shadow-lg shadow-primary/20"
+              disabled={subscribing}
+              className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary-glow transition shadow-lg shadow-primary/20 flex items-center justify-center min-w-32"
             >
-              S'abonner
+              {subscribing ? <Loader2 className="h-5 w-5 animate-spin" /> : "S'abonner"}
             </button>
           </form>
           <p className="mt-4 text-xs text-muted-foreground">
