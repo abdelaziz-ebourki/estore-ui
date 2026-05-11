@@ -10,7 +10,7 @@ const PER_PAGE = 8;
 
 export function ProductsPage() {
   const { filtered, isLoading, filters } = useProductFilters();
-  const { cat, setCat, selectedBrands, setBrands, price, setPrice, minRating, setMinRating } =
+  const { cat, setCat, selectedBrands, setBrands, price, setPrice, minRating, setMinRating, minDiscount, setMinDiscount } =
     filters;
 
   const [page, setPage] = useState(1);
@@ -32,6 +32,40 @@ export function ProductsPage() {
         {/* Filters */}
         <aside className={`${open ? "block" : "hidden"} lg:block`}>
           <div className="sticky top-24 space-y-6 rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <FilterSection title="Promotions">
+              <div className="space-y-1">
+                {[50, 40, 30, 20, 10, 1].map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => {
+                      setMinDiscount(d);
+                      setPage(1);
+                    }}
+                    className={`block w-full text-left text-sm py-1.5 transition-colors ${
+                      minDiscount === d
+                        ? "text-primary font-semibold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {d}% et plus
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    setMinDiscount(0);
+                    setPage(1);
+                  }}
+                  className={`block w-full text-left text-sm py-1.5 transition-colors ${
+                    minDiscount === 0
+                      ? "text-primary font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Toutes
+                </button>
+              </div>
+            </FilterSection>
+
             <FilterSection title="Catégorie">
               <button
                 onClick={() => {

@@ -13,6 +13,14 @@ export type Product = {
   specs: { label: string; value: string }[];
 };
 
+export type ProductFilter = {
+  category?: string;
+  brand?: string;
+  minDiscount?: number;
+  minPrice?: number;
+  maxPrice?: number;
+};
+
 export type Category = {
   id: string;
   name: string;

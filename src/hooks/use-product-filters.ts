@@ -10,6 +10,7 @@ export function useProductFilters() {
 
   const cat = searchParams.get("category") || "";
   const q = searchParams.get("q") || "";
+  const minDiscount = Number(searchParams.get("minDiscount")) || 0;
   const [selectedBrands, setBrands] = useState<string[]>([]);
   const [price, setPrice] = useState<[number, number]>([0, 2500]);
   const [minRating, setMinRating] = useState(0);
@@ -26,21 +27,32 @@ export function useProductFilters() {
 
   const filtered = useMemo(() => {
     const term = (q || "").toLowerCase().trim();
-    return allProducts.filter(
-      (p) =>
+    return allProducts.filter((p) => {
+      const discount = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+      return (
         (!cat || p.category === cat) &&
         (selectedBrands.length === 0 || selectedBrands.includes(p.brand)) &&
+        discount >= minDiscount &&
         p.price >= price[0] &&
         p.price <= price[1] &&
         p.rating >= minRating &&
-        (!term || p.name.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term)),
-    );
-  }, [allProducts, cat, selectedBrands, price, minRating, q]);
+        (!term || p.name.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term))
+      );
+    });
+  }, [allProducts, cat, selectedBrands, price, minRating, q, minDiscount]);
 
   const setCat = (v: string) => {
     setSearchParams((prev) => {
       if (v) prev.set("category", v);
       else prev.delete("category");
+      return prev;
+    });
+  };
+
+  const setMinDiscount = (v: number) => {
+    setSearchParams((prev) => {
+      if (v > 0) prev.set("minDiscount", String(v));
+      else prev.delete("minDiscount");
       return prev;
     });
   };
@@ -58,6 +70,8 @@ export function useProductFilters() {
       setPrice,
       minRating,
       setMinRating,
+      minDiscount,
+      setMinDiscount,
     },
   };
 }

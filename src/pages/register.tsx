@@ -69,7 +69,7 @@ export function RegisterPage() {
                 id="email"
                 type="email"
                 required
-                placeholder="nom@exemple.com"
+                placeholder="customer@example.com"
                 className="rounded-2xl border-border bg-background pl-10 h-12 focus-visible:ring-primary/20 transition-all"
               />
             </div>
