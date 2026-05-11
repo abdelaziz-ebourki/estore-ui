@@ -21,6 +21,7 @@ import { RegisterPage } from "@/pages/register";
 import { ContactPage } from "@/pages/contact";
 import { LivraisonPage } from "@/pages/livraison";
 import { RetoursPage } from "@/pages/retours";
+import { ReturnRequestPage } from "@/pages/returns.request.$id";
 import { ProfilePage } from "@/pages/profile";
 import { PrivacyPage } from "@/pages/privacy";
 import { TermsPage } from "@/pages/terms";
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
       {
         path: "retours",
         element: <RetoursPage />,
+      },
+      {
+        path: "returns/request/:id",
+        element: <ReturnRequestPage />,
       },
       {
         path: "profile",

@@ -44,7 +44,7 @@ export type Order = {
   customerName: string;
   date: string;
   total: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "return_requested";
   items: number;
 };
 
@@ -345,6 +345,30 @@ export const initialOrders: Order[] = [
     date: "2024-05-07",
     total: 899.0,
     status: "shipped",
+    items: 1,
+  },
+  {
+    id: "ORD-5501",
+    customerName: "Jean Dupont",
+    date: "2024-04-15",
+    total: 150.5,
+    status: "delivered",
+    items: 2,
+  },
+  {
+    id: "ORD-7732",
+    customerName: "Jean Dupont",
+    date: "2024-05-10",
+    total: 349.0,
+    status: "pending",
+    items: 1,
+  },
+  {
+    id: "ORD-3390",
+    customerName: "Jean Dupont",
+    date: "2024-05-11",
+    total: 99.0,
+    status: "processing",
     items: 1,
   },
 ];
