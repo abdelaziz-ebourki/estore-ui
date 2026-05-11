@@ -41,6 +41,8 @@ export type Order = {
 };
 
 const img = (q: string) => `https://images.unsplash.com/${q}?auto=format&fit=crop&w=800&q=80`;
+const placeholder = (text: string) =>
+  `https://placehold.co/800x800/6366f1/ffffff?text=${encodeURIComponent(text)}`;
 
 export const initialCategories: Category[] = [
   {
@@ -86,7 +88,13 @@ export const initialProducts: Product[] = [
     rating: 4.8,
     stock: 12,
     mainImage: img("photo-1592750475338-74b7b21085ab"),
-    images: [img("photo-1592750475338-74b7b21085ab"), img("photo-1616348436168-de43ad0db179")],
+    images: [
+      img("photo-1592750475338-74b7b21085ab"),
+      img("photo-1616348436168-de43ad0db179"),
+      placeholder("iPhone Pro View 1"),
+      placeholder("iPhone Pro View 2"),
+      placeholder("iPhone Pro View 3"),
+    ],
     description:
       "Le smartphone le plus avancé d'Apple avec puce A17 Pro, châssis titane et système photo Pro 48 Mpx.",
     specs: [
@@ -102,10 +110,16 @@ export const initialProducts: Product[] = [
     brand: "Samsung",
     category: "Smartphones",
     price: 1199,
+    oldPrice: 1299,
     rating: 4.7,
     stock: 8,
     mainImage: img("photo-1610945265064-0e34e5519bbf"),
-    images: [img("photo-1610945265064-0e34e5519bbf")],
+    images: [
+      img("photo-1610945265064-0e34e5519bbf"),
+      img("photo-1610945415295-d9bbf067e59c"),
+      placeholder("S24 Ultra Zoom"),
+      placeholder("S24 Ultra Side"),
+    ],
     description:
       'Smartphone Galaxy AI avec S Pen, écran 6.8" Dynamic AMOLED 2X et zoom optique 5x.',
     specs: [
@@ -124,7 +138,12 @@ export const initialProducts: Product[] = [
     rating: 4.9,
     stock: 5,
     mainImage: img("photo-1517336714731-489689fd1ca8"),
-    images: [img("photo-1517336714731-489689fd1ca8")],
+    images: [
+      img("photo-1517336714731-489689fd1ca8"),
+      img("photo-1541807084-5c52b6b3adef"),
+      placeholder("MacBook Keyboard"),
+      placeholder("MacBook Ports"),
+    ],
     description:
       "Performances exceptionnelles avec la puce M3 Pro, écran Liquid Retina XDR et autonomie record.",
     specs: [
@@ -132,6 +151,127 @@ export const initialProducts: Product[] = [
       { label: "Processeur", value: "Apple M3 Pro" },
       { label: "RAM", value: "18 Go" },
       { label: "Stockage", value: "512 Go SSD" },
+    ],
+  },
+  {
+    id: "sony-wh1000xm5",
+    name: "Sony WH-1000XM5",
+    brand: "Sony",
+    category: "Accessoires",
+    price: 349,
+    oldPrice: 399,
+    rating: 4.9,
+    stock: 15,
+    mainImage: img("photo-1618366712010-f4ae9c647dcb"),
+    images: [
+      img("photo-1618366712010-f4ae9c647dcb"),
+      img("photo-1505740420928-5e560c06d30e"),
+      placeholder("Sony Detail 1"),
+      placeholder("Sony Detail 2"),
+    ],
+    description:
+      "Le meilleur casque à réduction de bruit du marché avec une qualité sonore exceptionnelle et un confort inégalé.",
+    specs: [
+      { label: "Autonomie", value: "30 heures" },
+      { label: "Réduction de bruit", value: "Active (ANC)" },
+      { label: "Connexion", value: "Bluetooth 5.2" },
+      { label: "Poids", value: "250g" },
+    ],
+  },
+  {
+    id: "ipad-pro-m2",
+    name: "iPad Pro 12.9 M2",
+    brand: "Apple",
+    category: "Tablettes",
+    price: 1449,
+    rating: 4.9,
+    stock: 10,
+    mainImage: img("photo-1544244015-0df4b3ffc6b0"),
+    images: [
+      img("photo-1544244015-0df4b3ffc6b0"),
+      img("photo-1561154464-82e9adf32764"),
+      placeholder("iPad Pencil Detail"),
+      placeholder("iPad Screen"),
+    ],
+    description:
+      "L'iPad le plus puissant avec la puce M2, écran Liquid Retina XDR et compatibilité avec l'Apple Pencil 2.",
+    specs: [
+      { label: "Écran", value: '12.9" Liquid Retina XDR' },
+      { label: "Processeur", value: "Apple M2" },
+      { label: "RAM", value: "8 Go" },
+      { label: "Stockage", value: "256 Go" },
+    ],
+  },
+  {
+    id: "dell-xps-15",
+    name: "Dell XPS 15",
+    brand: "Dell",
+    category: "Ordinateurs",
+    price: 1899,
+    oldPrice: 2099,
+    rating: 4.7,
+    stock: 6,
+    mainImage: img("photo-1593642632823-8f785ba67e45"),
+    images: [
+      img("photo-1593642632823-8f785ba67e45"),
+      img("photo-1588872657578-7efd1f1555ed"),
+      placeholder("XPS Screen View"),
+      placeholder("XPS Ports View"),
+    ],
+    description:
+      "Le parfait équilibre entre puissance et portabilité. Écran InfinityEdge et performances haut de gamme.",
+    specs: [
+      { label: "Écran", value: '15.6" OLED 4K' },
+      { label: "Processeur", value: "Intel Core i7" },
+      { label: "RAM", value: "32 Go" },
+      { label: "Stockage", value: "1 To SSD" },
+    ],
+  },
+  {
+    id: "mx-master-3s",
+    name: "Logitech MX Master 3S",
+    brand: "Logitech",
+    category: "Accessoires",
+    price: 99,
+    rating: 4.8,
+    stock: 25,
+    mainImage: img("photo-1527864550417-7fd91fc51a46"),
+    images: [
+      img("photo-1527864550417-7fd91fc51a46"),
+      placeholder("MX Scroll Wheel"),
+      placeholder("MX Side Buttons"),
+    ],
+    description:
+      "La souris emblématique pour les créateurs et les codeurs. Précision, silence et ergonomie.",
+    specs: [
+      { label: "Capteur", value: "8000 DPI" },
+      { label: "Boutons", value: "7 programmables" },
+      { label: "Autonomie", value: "70 jours" },
+      { label: "Connexion", value: "Logi Bolt / Bluetooth" },
+    ],
+  },
+  {
+    id: "surface-pro-9",
+    name: "Surface Pro 9",
+    brand: "Microsoft",
+    category: "Tablettes",
+    price: 1149,
+    oldPrice: 1299,
+    rating: 4.6,
+    stock: 12,
+    mainImage: img("photo-1664478546384-d27e2870e28e"),
+    images: [
+      img("photo-1664478546384-d27e2870e28e"),
+      img("photo-1664478546394-d27e2870e28e"),
+      placeholder("Surface Stand"),
+    ],
+    description:
+      "La polyvalence d'une tablette et la puissance d'un ordinateur portable dans un seul appareil.",
+    specs: [
+      { label: "Écran", value: '13" PixelSense' },
+      { label: "Processeur", value: "Intel Core i5" },
+      { label: "RAM", value: "16 Go" },
+      { label: "Stockage", value: "256 Go SSD" },
     ],
   },
 ];
