@@ -5,20 +5,25 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/AuthContext";
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      localStorage.setItem("is_admin", "false");
-      toast.success("Connexion réussie");
-      navigate("/");
+      // Simple mock logic for testing roles
+      const role = email === "admin@example.com" ? "admin" : "customer";
+      login(role);
+      toast.success(`Connexion réussie en tant que ${role}`);
+      navigate(role === "admin" ? "/admin" : "/");
     }, 1000);
   };
 
@@ -51,7 +56,9 @@ export function LoginPage() {
                 id="email"
                 type="email"
                 required
-                placeholder="nom@exemple.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="customer@example.com"
                 className="rounded-2xl border-border bg-background pl-10 h-12 focus-visible:ring-primary/20 transition-all"
               />
             </div>
