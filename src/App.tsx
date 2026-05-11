@@ -16,6 +16,7 @@ import { ProductDetailPage } from "@/pages/products.$id";
 import { CartPage } from "@/pages/cart";
 import { CheckoutPage } from "@/pages/checkout";
 import { LoginPage } from "@/pages/login";
+import { RegisterPage } from "@/pages/register";
 import { ContactPage } from "@/pages/contact";
 import { LivraisonPage } from "@/pages/livraison";
 import { RetoursPage } from "@/pages/retours";
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
+      },
+      {
+        path: "register",
+        element: <RegisterPage />,
       },
       {
         path: "contact",

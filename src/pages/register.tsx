@@ -1,24 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Mail, Lock, Loader2, Zap, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Loader2, Zap, Eye, EyeOff, User } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function LoginPage() {
+export function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      localStorage.setItem("is_admin", "false");
-      toast.success("Connexion réussie");
-      navigate("/");
+      toast.success("Compte créé avec succès");
+      navigate("/login");
     }, 1000);
   };
 
@@ -29,15 +28,34 @@ export function LoginPage() {
 
         <div className="flex flex-col items-center mb-8">
           <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
-            <Zap className="h-6 w-6" />
+            <User className="h-6 w-6" />
           </div>
-          <h1 className="font-display text-3xl font-bold">Bienvenue</h1>
+          <h1 className="font-display text-3xl font-bold">Créer un compte</h1>
           <p className="mt-2 text-sm text-muted-foreground text-center">
-            Connectez-vous pour accéder à votre espace TechStore.
+            Rejoignez TechStore pour une expérience unique.
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        <form onSubmit={handleRegister} className="space-y-5">
+          <div className="space-y-2">
+            <Label
+              htmlFor="name"
+              className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
+            >
+              Nom complet
+            </Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="name"
+                type="text"
+                required
+                placeholder="Jean Dupont"
+                className="rounded-2xl border-border bg-background pl-10 h-12 focus-visible:ring-primary/20 transition-all"
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label
               htmlFor="email"
@@ -58,14 +76,12 @@ export function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <Label
-                htmlFor="password"
-                className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
-              >
-                Mot de passe
-              </Label>
-            </div>
+            <Label
+              htmlFor="password"
+              className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
+            >
+              Mot de passe
+            </Label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -90,14 +106,14 @@ export function LoginPage() {
             disabled={loading}
             className="w-full h-12 rounded-2xl bg-primary text-sm font-bold text-primary-foreground hover:bg-primary-glow shadow-lg shadow-primary/10 transition-all disabled:opacity-50 active:scale-[0.98]"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Se connecter"}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "S'inscrire"}
           </Button>
         </form>
 
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Pas encore de compte ?{" "}
-          <Link to="/register" className="font-bold text-primary hover:underline">
-            S'inscrire
+          Déjà un compte ?{" "}
+          <Link to="/login" className="font-bold text-primary hover:underline">
+            Se connecter
           </Link>
         </p>
       </div>
