@@ -26,6 +26,15 @@ export const api = {
         .sort((a, b) => b.rating - a.rating || b.stock - a.stock)
         .slice(0, limit);
     },
+    sales: async (limit = 3): Promise<Product[]> => {
+      await sleep(DELAY);
+      return [...initialProducts]
+        .filter((p) => p.oldPrice && p.oldPrice > p.price)
+        .sort(
+          (a, b) => (b.oldPrice! - b.price) / b.oldPrice! - (a.oldPrice! - a.price) / a.oldPrice!,
+        )
+        .slice(0, limit);
+    },
     get: async (id: string): Promise<Product | undefined> => {
       await sleep(DELAY);
       return initialProducts.find((p) => p.id === id);
