@@ -1,8 +1,16 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Zap, Github, Twitter, Instagram } from "lucide-react";
+import { api } from "@/services/api";
+import type { Category } from "@/data/products";
 
 export function Footer() {
   const year = new Date().getFullYear();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    api.categories.list().then(setCategories);
+  }, []);
 
   return (
     <footer className="border-t border-border bg-surface">
@@ -61,30 +69,16 @@ export function Footer() {
                   Tous les produits
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/products?category=Smartphones"
-                  className="text-muted-foreground hover:text-foreground transition"
-                >
-                  Smartphones
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/products?category=Ordinateurs"
-                  className="text-muted-foreground hover:text-foreground transition"
-                >
-                  Ordinateurs
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/products?category=Accessoires"
-                  className="text-muted-foreground hover:text-foreground transition"
-                >
-                  Accessoires
-                </Link>
-              </li>
+              {categories.map((category) => (
+                <li key={category.id}>
+                  <Link
+                    to={`/products?category=${category.name}`}
+                    className="text-muted-foreground hover:text-foreground transition"
+                  >
+                    {category.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
