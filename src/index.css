@@ -88,6 +88,29 @@
   --shadow-elegant: 0 20px 60px -20px oklch(0.55 0.19 255 / 0.35);
 }
 
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+[data-sonner-toast]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: var(--color-primary);
+  animation: toast-progress 4000ms linear forwards;
+}
+
+[data-sonner-toast]:hover::after {
+  animation-play-state: paused;
+}
+
 .dark {
   --background: oklch(0.13 0.02 260);
   --foreground: oklch(0.97 0.01 250);

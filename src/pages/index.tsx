@@ -42,13 +42,6 @@ export function HomePage() {
               Trouvez exactement ce que vous cherchez.
             </p>
           </div>
-          <Link
-            to="/products"
-            className="group inline-flex items-center gap-2 text-sm font-bold text-primary hover:opacity-80 transition"
-          >
-            Tout explorer{" "}
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {categories.map((c) => (

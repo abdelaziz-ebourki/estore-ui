@@ -37,7 +37,7 @@ export function CartPage() {
               >
                 <Link to={`/products/${item.product.id}`} className="shrink-0">
                   <img
-                    src={item.product.image}
+                    src={item.product.mainImage}
                     alt={item.product.name}
                     className="h-24 w-24 rounded-xl object-cover bg-surface"
                   />

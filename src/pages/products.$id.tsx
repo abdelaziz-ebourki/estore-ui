@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Star, Check, ShoppingCart, Truck, Shield } from "lucide-react";
 import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 
 export function ProductDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const product = products.find((p) => p.id === id);
   const { add } = useCart();
 
@@ -113,12 +114,15 @@ export function ProductDetailPage() {
             >
               <ShoppingCart className="h-4 w-4" /> Ajouter au panier
             </button>
-            <Link
-              to="/checkout"
+            <button
+              onClick={() => {
+                add(product);
+                navigate("/cart");
+              }}
               className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3.5 text-sm font-semibold hover:bg-accent transition"
             >
               Acheter maintenant
-            </Link>
+            </button>
           </div>
 
           <div className="mt-8 grid grid-cols-2 gap-3">
