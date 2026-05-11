@@ -6,25 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+import { api } from "@/services/api";
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      // Simple mock logic for testing roles
-      const role = email === "admin@example.com" ? "admin" : "customer";
+    try {
+      const role = await api.auth.login(email, password);
       login(role);
       toast.success(`Connexion réussie en tant que ${role}`);
       navigate(role === "admin" ? "/admin" : "/");
-    }, 1000);
+    } catch (error) {
+      toast.error("Erreur lors de la connexion");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,6 +83,8 @@ export function LoginPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="rounded-2xl border-border bg-background pl-10 pr-10 h-12 focus-visible:ring-primary/20 transition-all"
               />

@@ -14,6 +14,12 @@ const DELAY = 1000;
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const api = {
+  auth: {
+    login: async (email: string, _password: string): Promise<"admin" | "customer"> => {
+      await sleep(DELAY);
+      return email === "admin@example.com" ? "admin" : "customer";
+    },
+  },
   products: {
     list: async (): Promise<Product[]> => {
       await sleep(DELAY);
