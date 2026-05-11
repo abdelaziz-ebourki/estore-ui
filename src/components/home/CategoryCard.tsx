@@ -10,7 +10,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
   return (
     <Link
       to={`/products?category=${category.slug}`}
-      className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-0 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 w-full sm:w-[300px] aspect-[4/5]"
+      className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-0 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 w-full"
     >
       <div className="relative h-full w-full">
         <img

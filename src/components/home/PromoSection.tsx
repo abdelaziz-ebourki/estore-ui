@@ -38,7 +38,7 @@ export function PromoSection({ promos }: { promos: Product[] }) {
               Voir les promos <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
             {promos.map((p) => (
               <PromoProductCard key={p.id} product={p} />
             ))}

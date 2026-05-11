@@ -16,7 +16,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       to={`/products/${product.id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40 hover:shadow-[var(--shadow-card)]"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:border-primary/40 hover:shadow-[--shadow-card]"
     >
       <div className="relative aspect-square overflow-hidden bg-surface">
         {discount > 0 && (

@@ -48,7 +48,7 @@ export function HomePage() {
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {categories.map((c) => (
             <CategoryCard key={c.slug} category={c} />
           ))}
