@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { type Product, categories } from "@/data/products";
+import { type Product, type Category } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { api } from "@/services/api";
 
@@ -15,6 +15,7 @@ import { CategoryCard } from "@/components/home/CategoryCard";
 export function HomePage() {
   const [popular, setPopular] = useState<Product[]>([]);
   const [promos, setPromos] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
@@ -22,12 +23,14 @@ export function HomePage() {
   useEffect(() => {
     const loadHomeData = async () => {
       setIsLoading(true);
-      const [popularProducts, saleProducts] = await Promise.all([
+      const [popularProducts, saleProducts, cats] = await Promise.all([
         api.products.popular(8),
         api.products.sales(3),
+        api.categories.list(),
       ]);
       setPopular(popularProducts);
       setPromos(saleProducts);
+      setCategories(cats);
       setIsLoading(false);
     };
     loadHomeData();

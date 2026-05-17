@@ -2,14 +2,17 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Zap, Github, Twitter, Instagram } from "lucide-react";
 import { api } from "@/services/api";
-import type { Category } from "@/data/products";
+import type { Category } from "@/types";
 
 export function Footer() {
   const year = new Date().getFullYear();
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    api.categories.list().then(setCategories);
+    api.categories
+      .list()
+      .then(setCategories)
+      .catch(() => {});
   }, []);
 
   return (

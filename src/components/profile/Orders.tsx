@@ -11,7 +11,8 @@ import { ShoppingBag, Loader2, XCircle, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@/services/api";
-import { type Order } from "@/data/products";
+import { type Order } from "@/types";
+import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -28,15 +29,17 @@ import {
 import { toast } from "sonner";
 
 export function Orders() {
+  const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.orders.list().then((data) => {
-      setOrders(data.filter((o) => o.customerName === "Jean Dupont"));
+    if (!user?.email) return;
+    api.orders.list().then(({ data }) => {
+      setOrders(data.filter((o) => o.customerId === user.email));
       setLoading(false);
     });
-  }, []);
+  }, [user?.email]);
 
   const handleCancelOrder = (id: string) => {
     api.orders.updateStatus(id, "cancelled").then((updatedOrder) => {

@@ -1,11 +1,4 @@
-import { useEffect } from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Outlet,
-  useLocation,
-  ScrollRestoration,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, ScrollRestoration } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";

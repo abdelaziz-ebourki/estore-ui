@@ -6,12 +6,22 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const rootElement = document.getElementById("root");
 
-if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </React.StrictMode>,
-  );
+async function enableMocking() {
+  if (process.env.NODE_ENV !== "development") {
+    return;
+  }
+  const { worker } = await import("./mocks/browser");
+  return worker.start();
 }
+
+enableMocking().then(() => {
+  if (rootElement) {
+    ReactDOM.createRoot(rootElement).render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </React.StrictMode>,
+    );
+  }
+});

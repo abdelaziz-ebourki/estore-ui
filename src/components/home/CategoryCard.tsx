@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { type Category } from "@/data/products";
+import { type Category } from "@/types";
 
 interface CategoryCardProps {
   category: Category;

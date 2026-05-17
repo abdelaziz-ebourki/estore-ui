@@ -25,7 +25,7 @@ export function ReturnRequestPage() {
       await api.orders.updateStatus(id!, "return_requested");
       toast.success(`Demande de retour pour la commande ${id} envoyée avec succès.`);
       navigate("/profile?tab=orders");
-    } catch (error) {
+    } catch {
       toast.error("Une erreur est survenue lors de l'envoi de la demande.");
     }
   };

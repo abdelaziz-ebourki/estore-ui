@@ -18,17 +18,24 @@ export function Payments() {
       </CardHeader>
       <CardContent className="p-8 pt-4 space-y-4">
         {methods.map((method, i) => (
-          <div key={i} className="flex items-center justify-between p-4 rounded-2xl border border-border bg-muted/20">
+          <div
+            key={i}
+            className="flex items-center justify-between p-4 rounded-2xl border border-border bg-muted/20"
+          >
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-background border border-border">
                 <CreditCard className="w-6 h-6 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-bold">{method.type} se terminant par {method.last4}</p>
+                <p className="font-bold">
+                  {method.type} se terminant par {method.last4}
+                </p>
                 <p className="text-sm text-muted-foreground">Expire le {method.expiry}</p>
               </div>
             </div>
-            <Button variant="ghost" className="text-destructive font-bold">Supprimer</Button>
+            <Button variant="ghost" className="text-destructive font-bold">
+              Supprimer
+            </Button>
           </div>
         ))}
         <Button variant="outline" className="w-full h-12 rounded-2xl gap-2 font-bold">

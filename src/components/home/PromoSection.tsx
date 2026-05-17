@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { type Product } from "@/data/products";
+import { type Product } from "@/types";
 import { PromoProductCard } from "./PromoProductCard";
 
 export function PromoSection({ promos }: { promos: Product[] }) {

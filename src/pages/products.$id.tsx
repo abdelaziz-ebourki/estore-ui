@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Star, ShoppingCart, Truck, Shield } from "lucide-react";
+import { Star, ShoppingCart, Truck, Shield, Loader2 } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-import { products } from "@/data/products";
+import type { Product } from "@/types";
+import { api } from "@/services/api";
 import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
@@ -23,20 +26,51 @@ import {
 export function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find((p) => p.id === id);
   const { add } = useCart();
 
-  const [api, setApi] = useState<CarouselApi>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentImg, setCurrentImg] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    if (!api) return;
+    if (!carouselApi) return;
 
-    api.on("select", () => {
-      setCurrentImg(api.selectedScrollSnap());
+    carouselApi.on("select", () => {
+      setCurrentImg(carouselApi.selectedScrollSnap());
     });
-  }, [api]);
+  }, [carouselApi]);
+
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const [productData, allProductsRes] = await Promise.all([
+          api.products.get(id!),
+          api.products.list(),
+        ]);
+        setProduct(productData);
+        setAllProducts(allProductsRes.data);
+      } catch {
+        setProduct(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (id) load();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
+        <Loader2 className="mx-auto h-10 w-10 animate-spin text-primary/40 mb-4" />
+        <p className="text-muted-foreground">Chargement du produit...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -56,7 +90,7 @@ export function ProductDetailPage() {
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0;
 
-  const similar = products
+  const similar = allProducts
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
@@ -78,7 +112,7 @@ export function ProductDetailPage() {
       <div className="grid lg:grid-cols-2 gap-12">
         <div className="space-y-6">
           <div className="relative group">
-            <Carousel setApi={setApi} className="w-full">
+            <Carousel setApi={setCarouselApi} className="w-full">
               <CarouselContent>
                 {product.images.map((img, i) => (
                   <CarouselItem key={i}>
@@ -120,7 +154,7 @@ export function ProductDetailPage() {
             {product.images.map((img, i) => (
               <button
                 key={i}
-                onClick={() => api?.scrollTo(i)}
+                onClick={() => carouselApi?.scrollTo(i)}
                 className={cn(
                   "relative aspect-square w-24 shrink-0 overflow-hidden rounded-2xl border-2 transition-all duration-300",
                   currentImg === i
@@ -175,9 +209,17 @@ export function ProductDetailPage() {
             )}
           </div>
 
-          <p className="text-muted-foreground text-lg leading-relaxed mb-10 border-l-4 border-primary/20 pl-6 italic">
+          <p className="text-muted-foreground text-lg leading-relaxed mb-6 border-l-4 border-primary/20 pl-6 italic">
             "{product.description}"
           </p>
+
+          {product.descriptionMarkdown && (
+            <div className="prose prose-sm dark:prose-invert max-w-none mb-10 p-6 rounded-2xl bg-card border border-border">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {product.descriptionMarkdown}
+              </ReactMarkdown>
+            </div>
+          )}
 
           <div className="grid sm:grid-cols-2 gap-4 mb-12">
             <button

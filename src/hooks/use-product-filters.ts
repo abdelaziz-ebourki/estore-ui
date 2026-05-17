@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { type Product } from "@/data/products";
+import { type Product } from "@/types";
 import { api } from "@/services/api";
 
 export function useProductFilters() {
@@ -18,7 +18,7 @@ export function useProductFilters() {
   useEffect(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
-      const data = await api.products.list();
+      const { data } = await api.products.list();
       setAllProducts(data);
       setIsLoading(false);
     };

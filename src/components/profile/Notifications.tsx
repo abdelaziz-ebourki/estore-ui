@@ -16,7 +16,9 @@ export function Notifications() {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label className="text-base font-bold">Commandes</Label>
-            <p className="text-sm text-muted-foreground">Recevez des mises à jour sur vos commandes.</p>
+            <p className="text-sm text-muted-foreground">
+              Recevez des mises à jour sur vos commandes.
+            </p>
           </div>
           <Switch defaultChecked />
         </div>

@@ -2,9 +2,62 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Settings, Key } from "lucide-react";
+import { Settings, Key, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { api } from "@/services/api";
+import { toast } from "sonner";
+import type { User } from "@/types";
 
-export function PersonalInfo() {
+export function PersonalInfo({
+  user,
+  onUpdate,
+}: {
+  user: User | null;
+  onUpdate: (u: Partial<User>) => void;
+}) {
+  const [saving, setSaving] = useState(false);
+  const [name, setName] = useState(user?.name || "");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const updated = await api.users.updateProfile({ name });
+      onUpdate(updated);
+      toast.success("Profil mis à jour");
+    } catch {
+      toast.error("Erreur lors de la mise à jour");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Le mot de passe doit contenir au moins 6 caractères");
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      await api.auth.changePassword(currentPassword, newPassword);
+      toast.success("Mot de passe mis à jour");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch {
+      toast.error("Erreur lors du changement de mot de passe");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <Card className="rounded-[2.5rem] border-muted-foreground/10 shadow-sm overflow-hidden">
@@ -18,25 +71,35 @@ export function PersonalInfo() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Prénom
+                Nom complet
               </Label>
-              <Input defaultValue="Jean" className="rounded-2xl h-12 bg-muted/30" />
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="rounded-2xl h-12 bg-muted/30"
+              />
             </div>
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Nom
-              </Label>
-              <Input defaultValue="Dupont" className="rounded-2xl h-12 bg-muted/30" />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Adresse Email
               </Label>
-              <Input defaultValue="jean.dupont@exemple.fr" className="rounded-2xl h-12 bg-muted/30" />
+              <Input
+                value={user?.email || ""}
+                disabled
+                className="rounded-2xl h-12 bg-muted/30 opacity-60"
+              />
             </div>
           </div>
-          <Button className="rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20">
-            Enregistrer les modifications
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="rounded-2xl h-12 px-8 font-bold shadow-lg shadow-primary/20"
+          >
+            {saving ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              "Enregistrer les modifications"
+            )}
           </Button>
         </CardContent>
       </Card>
@@ -53,24 +116,51 @@ export function PersonalInfo() {
               <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Mot de passe actuel
               </Label>
-              <Input type="password" placeholder="••••••••" className="rounded-2xl h-12 bg-muted/30" />
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="rounded-2xl h-12 bg-muted/30"
+              />
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Nouveau mot de passe
                 </Label>
-                <Input type="password" placeholder="••••••••" className="rounded-2xl h-12 bg-muted/30" />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="rounded-2xl h-12 bg-muted/30"
+                />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   Confirmer le mot de passe
                 </Label>
-                <Input type="password" placeholder="••••••••" className="rounded-2xl h-12 bg-muted/30" />
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="rounded-2xl h-12 bg-muted/30"
+                />
               </div>
             </div>
-            <Button variant="outline" className="rounded-2xl h-12 px-8 font-bold">
-              Mettre à jour le mot de passe
+            <Button
+              variant="outline"
+              onClick={handleChangePassword}
+              disabled={changingPassword}
+              className="rounded-2xl h-12 px-8 font-bold"
+            >
+              {changingPassword ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                "Mettre à jour le mot de passe"
+              )}
             </Button>
           </div>
         </CardContent>

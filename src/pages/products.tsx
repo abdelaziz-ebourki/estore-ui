@@ -1,17 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, SlidersHorizontal, Loader2 } from "lucide-react";
-import { brands, categories } from "@/data/products";
+import { type Category } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useProductFilters } from "@/hooks/use-product-filters";
+import { api } from "@/services/api";
 
 const PER_PAGE = 8;
 
 export function ProductsPage() {
   const { filtered, isLoading, filters } = useProductFilters();
-  const { cat, setCat, selectedBrands, setBrands, price, setPrice, minRating, setMinRating, minDiscount, setMinDiscount } =
-    filters;
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrandsStatic] = useState<string[]>([]);
+
+  useEffect(() => {
+    Promise.all([api.categories.list(), api.products.brands()]).then(([cats, brs]) => {
+      setCategories(cats);
+      setBrandsStatic(brs);
+    });
+  }, []);
+
+  const {
+    cat,
+    setCat,
+    selectedBrands,
+    setBrands,
+    price,
+    setPrice,
+    minRating,
+    setMinRating,
+    minDiscount,
+    setMinDiscount,
+  } = filters;
 
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);

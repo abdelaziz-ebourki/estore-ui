@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Mail, Lock, Loader2, Zap, Eye, EyeOff, User } from "lucide-react";
+import { Mail, Lock, Loader2, Eye, EyeOff, User } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

@@ -1,9 +1,9 @@
-import { User, ShoppingBag, Settings, LogOut, ChevronRight, CreditCard, Bell } from "lucide-react";
+import { ShoppingBag, LogOut, ChevronRight, CreditCard, Bell, User } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { Separator } from "@/components/ui/separator";
-import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { PersonalInfo } from "@/components/profile/PersonalInfo";
 import { Orders } from "@/components/profile/Orders";
 import { Payments } from "@/components/profile/Payments";
@@ -22,17 +22,23 @@ import {
 
 export function ProfilePage() {
   const { clear } = useCart();
+  const { logout: authLogout, user, updateUser } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "info";
 
   const handleLogout = () => {
-    localStorage.removeItem("is_admin");
+    authLogout();
     clear();
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   const handleTabChange = (tab: string) => {
-    setSearchParams({ tab });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("tab", tab);
+      return next;
+    });
   };
 
   const renderContent = () => {
@@ -44,26 +50,32 @@ export function ProfilePage() {
       case "notifications":
         return <Notifications />;
       default:
-        return <PersonalInfo />;
+        return <PersonalInfo user={user} onUpdate={updateUser} />;
     }
   };
+
+  const memberSince = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })
+    : "";
 
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-6 py-10 lg:py-16 animate-in fade-in duration-700">
       <div className="flex flex-col lg:flex-row gap-12">
         <aside className="lg:w-80 shrink-0 space-y-8">
           <div className="flex flex-col items-center text-center p-8 rounded-[2.5rem] bg-card border border-border shadow-sm">
-            <Avatar className="h-24 w-24 border-4 border-background shadow-xl mb-4 flex items-center justify-center bg-muted">
+            <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center mb-4 border-4 border-background shadow-xl">
               <User className="h-10 w-10 text-muted-foreground" />
-            </Avatar>
-            <h1 className="text-2xl font-bold tracking-tight">Jean Dupont</h1>
-            <p className="text-sm text-muted-foreground mt-1 font-medium">jean.dupont@exemple.fr</p>
-            <Badge
-              variant="secondary"
-              className="mt-4 bg-primary/5 text-primary border-none font-bold px-4 py-1"
-            >
-              Client depuis janvier 2024
-            </Badge>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">{user?.name || "Utilisateur"}</h1>
+            <p className="text-sm text-muted-foreground mt-1 font-medium">{user?.email || ""}</p>
+            {memberSince && (
+              <Badge
+                variant="secondary"
+                className="mt-4 bg-primary/5 text-primary border-none font-bold px-4 py-1"
+              >
+                Client depuis {memberSince}
+              </Badge>
+            )}
           </div>
 
           <nav className="flex flex-col gap-2 p-2 rounded-4xl bg-card border border-border shadow-sm">

@@ -20,11 +20,11 @@ export function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const role = await api.auth.login(email, password);
-      login(role);
-      toast.success(`Connexion réussie en tant que ${role}`);
-      navigate(role === "admin" ? "/admin" : "/");
-    } catch (error) {
+      const data = await api.auth.login(email, password);
+      login(data.role, data.user);
+      toast.success(`Connexion réussie en tant que ${data.role}`);
+      navigate(data.role === "admin" ? "/admin" : "/");
+    } catch {
       toast.error("Erreur lors de la connexion");
     } finally {
       setLoading(false);
