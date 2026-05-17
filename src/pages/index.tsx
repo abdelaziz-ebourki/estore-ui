@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { type Product, type Category } from "@/types";
 import { ProductCard } from "@/components/ProductCard";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
 
 // Home Components
@@ -17,12 +19,14 @@ export function HomePage() {
   const [promos, setPromos] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [subscribing, setSubscribing] = useState(false);
 
-  useEffect(() => {
-    const loadHomeData = async () => {
-      setIsLoading(true);
+  const loadHomeData = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
       const [popularProducts, saleProducts, cats] = await Promise.all([
         api.products.popular(8),
         api.products.sales(3),
@@ -31,8 +35,15 @@ export function HomePage() {
       setPopular(popularProducts);
       setPromos(saleProducts);
       setCategories(cats);
+    } catch {
+      setError("Impossible de charger les données.");
+      toast.error("Erreur lors du chargement de la page");
+    } finally {
       setIsLoading(false);
-    };
+    }
+  };
+
+  useEffect(() => {
     loadHomeData();
   }, []);
 
@@ -55,6 +66,17 @@ export function HomePage() {
       <Hero />
       <TrustStrip />
 
+      {error && (
+        <section className="mx-auto max-w-7xl px-4 md:px-6 py-8">
+          <div className="rounded-2xl bg-destructive/10 border border-destructive/20 p-6 text-center">
+            <p className="text-destructive font-medium">{error}</p>
+            <Button onClick={loadHomeData} variant="outline" className="mt-4 gap-2">
+              <RotateCcw className="h-4 w-4" /> Réessayer
+            </Button>
+          </div>
+        </section>
+      )}
+
       {/* Categories */}
       <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4 text-center md:text-left">
@@ -67,11 +89,19 @@ export function HomePage() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {categories.map((c) => (
-            <CategoryCard key={c.slug} category={c} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="aspect-3/4 rounded-4xl bg-muted animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {categories.map((c) => (
+              <CategoryCard key={c.slug} category={c} />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Popular products */}
@@ -96,14 +126,14 @@ export function HomePage() {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {[...Array(4)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
               <div key={i} className="aspect-3/4 rounded-3xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {popular.map((p) => (
-              <ProductCard key={p.id} product={p} />
+            {popular.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
@@ -118,7 +148,7 @@ export function HomePage() {
       )}
 
       {/* Modern Newsletter/Newsletter CTA */}
-      <section className="mx-auto max-w-7xl px-4 md:px-6 py-24">
+      <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">
         <div className="relative rounded-[3rem] bg-card border border-border p-8 md:p-20 text-center overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-linear-to-r from-transparent via-primary to-transparent opacity-20" />
           <h2 className="font-display text-3xl md:text-5xl font-bold max-w-2xl mx-auto leading-tight">
@@ -132,21 +162,21 @@ export function HomePage() {
             onSubmit={handleSubscribe}
             className="mt-10 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto"
           >
-            <input
+            <Input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="votre@email.com"
-              className="flex-1 px-6 py-4 rounded-full bg-surface border border-border focus:outline-none focus:ring-2 focus:ring-primary/20 transition"
+              className="flex-1 rounded-2xl h-12 bg-muted/30"
             />
-            <button
+            <Button
               type="submit"
               disabled={subscribing}
-              className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold hover:bg-primary-glow transition shadow-lg shadow-primary/20 flex items-center justify-center min-w-32"
+              className="rounded-full min-w-32 h-12 shadow-lg shadow-primary/20"
             >
               {subscribing ? <Loader2 className="h-5 w-5 animate-spin" /> : "S'abonner"}
-            </button>
+            </Button>
           </form>
           <p className="mt-4 text-xs text-muted-foreground">
             Pas de spam, promis. Vous pouvez vous désabonner à tout moment.

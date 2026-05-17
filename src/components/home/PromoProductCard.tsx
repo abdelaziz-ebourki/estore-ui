@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { type Product } from "@/types";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PromoProductCardProps {
   product: Product;
@@ -24,18 +24,16 @@ export function PromoProductCard({ product }: PromoProductCardProps) {
         <div className="text-xs font-bold text-white line-clamp-1 opacity-80 uppercase tracking-tighter">
           {product.brand}
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="text-sm font-bold text-white line-clamp-1 mt-0.5 cursor-default">
-                {product.name}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{product.name}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="text-sm font-bold text-white line-clamp-1 mt-0.5 cursor-default">
+              {product.name}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{product.name}</p>
+          </TooltipContent>
+        </Tooltip>
         <div className="mt-2 flex items-center gap-2">
           <span className="text-lg font-black text-white">{product.price}€</span>
           {product.oldPrice && (

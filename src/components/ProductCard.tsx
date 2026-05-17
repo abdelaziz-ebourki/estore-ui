@@ -4,7 +4,7 @@ import type { Product } from "@/types";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
@@ -56,18 +56,16 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="mt-1 font-display font-semibold text-foreground group-hover:text-primary transition line-clamp-1 cursor-default">
-                {product.name}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{product.name}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="mt-1 font-display font-semibold text-foreground group-hover:text-primary transition line-clamp-1 cursor-default">
+              {product.name}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{product.name}</p>
+          </TooltipContent>
+        </Tooltip>
 
         <div className="mt-auto pt-3 flex items-baseline gap-2">
           <span className="font-display text-lg font-bold">{product.price} €</span>
