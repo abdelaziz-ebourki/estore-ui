@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { api } from "@/services/api";
+import { toast } from "sonner";
 import type { DashboardStats, SalesPoint } from "@/types";
 import {
   Package,
@@ -52,7 +53,7 @@ export function AdminDashboard() {
         setCategories(catData);
         setActivities(activityData);
       } catch {
-        /* empty */
+        toast.error("Erreur lors du chargement des données");
       } finally {
         setLoading(false);
       }

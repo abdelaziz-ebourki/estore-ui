@@ -5,7 +5,7 @@ import { api } from "@/services/api";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ShoppingBag, Euro, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,10 +14,16 @@ export function AdminUsers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.users.list().then(({ data }) => {
-      setUsers(data);
-      setLoading(false);
-    });
+    api.users
+      .list()
+      .then(({ data }) => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("Erreur lors du chargement des utilisateurs");
+        setLoading(false);
+      });
   }, []);
 
   const toggleStatus = async (user: User) => {
@@ -45,7 +51,6 @@ export function AdminUsers() {
       cell: ({ row }) => (
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10 border">
-            <AvatarImage src={row.original.avatar} />
             <AvatarFallback className="bg-primary/5 text-primary font-bold text-xs">
               {row.original.name.substring(0, 2).toUpperCase()}
             </AvatarFallback>

@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -16,12 +16,12 @@ async function enableMocking() {
 
 enableMocking().then(() => {
   if (rootElement) {
-    ReactDOM.createRoot(rootElement).render(
-      <React.StrictMode>
+    createRoot(rootElement).render(
+      <StrictMode>
         <ErrorBoundary>
           <App />
         </ErrorBoundary>
-      </React.StrictMode>,
+      </StrictMode>,
     );
   }
 });

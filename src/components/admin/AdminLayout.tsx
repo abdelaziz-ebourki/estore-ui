@@ -25,6 +25,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
 
 const sidebarLinks = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
@@ -35,8 +36,20 @@ const sidebarLinks = [
   { icon: Settings, label: "Paramètres", href: "/admin/settings" },
 ];
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
 export function AdminLayout() {
   const location = useLocation();
+  const { user } = useAuth();
+  const displayName = user?.name || "Admin";
+  const displayInitials = initials(displayName);
 
   return (
     <SidebarProvider>
@@ -107,10 +120,10 @@ export function AdminLayout() {
             </div>
             <div className="ml-auto flex items-center gap-4 px-4">
               <span className="text-sm text-muted-foreground hidden md:inline-block">
-                Admin User
+                {displayName}
               </span>
               <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
-                AD
+                {displayInitials}
               </div>
             </div>
           </header>

@@ -4,9 +4,10 @@ import { type Product } from "@/types";
 import { PromoProductCard } from "./PromoProductCard";
 
 export function PromoSection({ promos }: { promos: Product[] }) {
-  const maxDiscount = Math.max(
-    ...promos.map((p) => Math.round(((p.oldPrice! - p.price) / p.oldPrice!) * 100)),
-  );
+  const validPromos = promos.filter((p): p is Product & { oldPrice: number } => !!p.oldPrice);
+  const maxDiscount = validPromos.length
+    ? Math.max(...validPromos.map((p) => Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100)))
+    : 0;
 
   return (
     <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">

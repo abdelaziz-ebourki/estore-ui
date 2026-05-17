@@ -41,7 +41,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  avatar?: string;
+  password?: string;
   orders: number;
   totalSpent: number;
   status: "active" | "inactive";

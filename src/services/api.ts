@@ -15,7 +15,7 @@ import {
 
 const getToken = () => localStorage.getItem("token");
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
   details?: Record<string, string[]>;
   constructor(message: string, status: number, details?: Record<string, string[]>) {
@@ -52,21 +52,29 @@ const request = async <T>(url: string, options: RequestInit = {}): Promise<T> =>
   return response.json();
 };
 
+const buildQuery = (params?: Record<string, string | number | undefined>) => {
+  const qs = new URLSearchParams();
+  if (params)
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== "") qs.set(k, String(v));
+    });
+  return qs.toString();
+};
+
 export const api = {
   auth: {
-    login: async (email: string, _password: string) => {
-      void _password;
-      const data = await request<{ token: string; role: string; user: User }>("/api/auth/login", {
+    login: (email: string, password: string) =>
+      request<{ token: string; role: string; user: User }>("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email }),
-      });
-      localStorage.setItem("token", data.token);
-      return data;
-    },
-    register: (name: string, email: string) =>
+        body: JSON.stringify({ email, password }),
+      }).then((data) => {
+        localStorage.setItem("token", data.token);
+        return data;
+      }),
+    register: (firstName: string, lastName: string, email: string, password: string) =>
       request<{ token: string; role: string; user: User }>("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name: `${firstName} ${lastName}`, email, password }),
       }),
     me: () => request<{ user: User; role: string }>("/api/auth/me"),
     changePassword: (currentPassword: string, newPassword: string) =>
@@ -88,14 +96,7 @@ export const api = {
       brand?: string;
       q?: string;
       inStock?: string;
-    }) => {
-      const qs = new URLSearchParams();
-      if (params)
-        Object.entries(params).forEach(([k, v]) => {
-          if (v !== undefined && v !== "") qs.set(k, String(v));
-        });
-      return request<PaginatedResponse<Product>>(`/api/products?${qs.toString()}`);
-    },
+    }) => request<PaginatedResponse<Product>>(`/api/products?${buildQuery(params)}`),
     popular: (limit = 8) => request<Product[]>(`/api/products/popular?limit=${limit}`),
     sales: (limit = 3) => request<Product[]>(`/api/products/sales?limit=${limit}`),
     search: (q: string, limit = 10) =>
@@ -103,15 +104,9 @@ export const api = {
     brands: () => request<string[]>("/api/products/brands"),
     get: (id: string) => request<Product>(`/api/products/${id}`),
     create: (p: Omit<Product, "id">) =>
-      request<Product>("/api/products", {
-        method: "POST",
-        body: JSON.stringify(p),
-      }),
+      request<Product>("/api/products", { method: "POST", body: JSON.stringify(p) }),
     update: (id: string, p: Partial<Product>) =>
-      request<Product>(`/api/products/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify(p),
-      }),
+      request<Product>(`/api/products/${id}`, { method: "PATCH", body: JSON.stringify(p) }),
     delete: (id: string) => request<void>(`/api/products/${id}`, { method: "DELETE" }),
     reviews: {
       list: (productId: string) => request<Review[]>(`/api/products/${productId}/reviews`),
@@ -126,15 +121,9 @@ export const api = {
     list: () => request<Category[]>("/api/categories"),
     get: (id: string) => request<Category>(`/api/categories/${id}`),
     create: (c: Omit<Category, "id">) =>
-      request<Category>("/api/categories", {
-        method: "POST",
-        body: JSON.stringify(c),
-      }),
+      request<Category>("/api/categories", { method: "POST", body: JSON.stringify(c) }),
     update: (id: string, c: Partial<Category>) =>
-      request<Category>(`/api/categories/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify(c),
-      }),
+      request<Category>(`/api/categories/${id}`, { method: "PATCH", body: JSON.stringify(c) }),
     delete: (id: string) => request<void>(`/api/categories/${id}`, { method: "DELETE" }),
   },
   newsletter: {
@@ -145,34 +134,16 @@ export const api = {
       }),
   },
   users: {
-    list: (params?: { page?: number; limit?: number }) => {
-      const qs = new URLSearchParams();
-      if (params)
-        Object.entries(params).forEach(([k, v]) => {
-          if (v !== undefined) qs.set(k, String(v));
-        });
-      return request<PaginatedResponse<User>>(`/api/users?${qs.toString()}`);
-    },
+    list: (params?: { page?: number; limit?: number }) =>
+      request<PaginatedResponse<User>>(`/api/users?${buildQuery(params)}`),
     updateStatus: (id: string, status: User["status"]) =>
-      request<User>(`/api/users/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      }),
-    updateProfile: (body: { name?: string; avatar?: string }) =>
-      request<User>("/api/users/me", {
-        method: "PATCH",
-        body: JSON.stringify(body),
-      }),
+      request<User>(`/api/users/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
+    updateProfile: (body: { name?: string }) =>
+      request<User>("/api/users/me", { method: "PATCH", body: JSON.stringify(body) }),
   },
   orders: {
-    list: (params?: { page?: number; limit?: number; status?: string }) => {
-      const qs = new URLSearchParams();
-      if (params)
-        Object.entries(params).forEach(([k, v]) => {
-          if (v !== undefined && v !== "") qs.set(k, String(v));
-        });
-      return request<PaginatedResponse<Order>>(`/api/orders?${qs.toString()}`);
-    },
+    list: (params?: { page?: number; limit?: number; status?: string }) =>
+      request<PaginatedResponse<Order>>(`/api/orders?${buildQuery(params)}`),
     get: (id: string) => request<Order>(`/api/orders/${id}`),
     create: (body: {
       items: { productId: string; quantity: number }[];
@@ -180,10 +151,7 @@ export const api = {
       paymentMethod?: string;
     }) => request<Order>("/api/orders", { method: "POST", body: JSON.stringify(body) }),
     updateStatus: (id: string, status: Order["status"]) =>
-      request<Order>(`/api/orders/${id}`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      }),
+      request<Order>(`/api/orders/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
   },
   upload: {
     image: () => request<{ url: string; filename: string }>("/api/upload", { method: "POST" }),

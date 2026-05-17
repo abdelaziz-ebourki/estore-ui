@@ -16,7 +16,9 @@ export function PersonalInfo({
   onUpdate: (u: Partial<User>) => void;
 }) {
   const [saving, setSaving] = useState(false);
-  const [name, setName] = useState(user?.name || "");
+  const nameParts = (user?.name || "").split(" ");
+  const [firstName, setFirstName] = useState(nameParts[0] || "");
+  const [lastName, setLastName] = useState(nameParts.slice(1).join(" "));
   const [changingPassword, setChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -25,7 +27,7 @@ export function PersonalInfo({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updated = await api.users.updateProfile({ name });
+      const updated = await api.users.updateProfile({ name: `${firstName} ${lastName}`.trim() });
       onUpdate(updated);
       toast.success("Profil mis à jour");
     } catch {
@@ -71,24 +73,34 @@ export function PersonalInfo({
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Nom complet
+                Prénom
               </Label>
               <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 className="rounded-2xl h-12 bg-muted/30"
               />
             </div>
             <div className="space-y-2">
               <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Adresse Email
+                Nom
               </Label>
               <Input
-                value={user?.email || ""}
-                disabled
-                className="rounded-2xl h-12 bg-muted/30 opacity-60"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="rounded-2xl h-12 bg-muted/30"
               />
             </div>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              Adresse Email
+            </Label>
+            <Input
+              value={user?.email || ""}
+              disabled
+              className="rounded-2xl h-12 bg-muted/30 opacity-60"
+            />
           </div>
           <Button
             onClick={handleSave}

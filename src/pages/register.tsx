@@ -5,20 +5,36 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { api } from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 export function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!firstName.trim() || !lastName.trim()) {
+      toast.error("Veuillez renseigner votre prénom et nom");
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const data = await api.auth.register(firstName, lastName, email, password);
+      login("customer", data.user);
       toast.success("Compte créé avec succès");
-      navigate("/login");
-    }, 1000);
+      navigate("/");
+    } catch {
+      toast.error("Erreur lors de la création du compte");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,21 +53,39 @@ export function RegisterPage() {
         </div>
 
         <form onSubmit={handleRegister} className="space-y-5">
-          <div className="space-y-2">
-            <Label
-              htmlFor="name"
-              className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
-            >
-              Nom complet
-            </Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label
+                htmlFor="firstName"
+                className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
+              >
+                Prénom
+              </Label>
               <Input
-                id="name"
+                id="firstName"
                 type="text"
                 required
-                placeholder="Jean Dupont"
-                className="rounded-2xl border-border bg-background pl-10 h-12 focus-visible:ring-primary/20 transition-all"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Jean"
+                className="rounded-2xl border-border bg-background h-12 focus-visible:ring-primary/20 transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="lastName"
+                className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
+              >
+                Nom
+              </Label>
+              <Input
+                id="lastName"
+                type="text"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Dupont"
+                className="rounded-2xl border-border bg-background h-12 focus-visible:ring-primary/20 transition-all"
               />
             </div>
           </div>
@@ -69,6 +103,8 @@ export function RegisterPage() {
                 id="email"
                 type="email"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="customer@example.com"
                 className="rounded-2xl border-border bg-background pl-10 h-12 focus-visible:ring-primary/20 transition-all"
               />
@@ -88,6 +124,8 @@ export function RegisterPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="rounded-2xl border-border bg-background pl-10 pr-10 h-12 focus-visible:ring-primary/20 transition-all"
               />

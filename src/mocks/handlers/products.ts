@@ -1,7 +1,7 @@
 import { http, HttpResponse, delay } from "msw";
 import { db, API_DELAY } from "../db";
 import { requireAdmin, requireAuth } from "./auth";
-import { validateBody } from "../helpers/validation";
+import { validateBody, notFound } from "../helpers/validation";
 
 export const handlers = [
   http.get("/api/products", async ({ request }) => {
@@ -14,8 +14,6 @@ export const handlers = [
     const brand = url.searchParams.get("brand") || "";
     const q = url.searchParams.get("q") || "";
     const inStock = url.searchParams.get("inStock");
-
-    await delay(API_DELAY);
 
     let filtered = [...db.products];
 
@@ -44,7 +42,7 @@ export const handlers = [
     const total = filtered.length;
     const totalPages = Math.ceil(total / limit);
     const data = filtered.slice((page - 1) * limit, page * limit);
-
+    await delay(API_DELAY);
     return HttpResponse.json({ data, total, page, limit, totalPages });
   }),
 
@@ -93,7 +91,7 @@ export const handlers = [
   http.get("/api/products/:id", async ({ params }) => {
     await delay(API_DELAY);
     const product = db.products.find((p) => p.id === params.id);
-    return product ? HttpResponse.json(product) : new HttpResponse(null, { status: 404 });
+    return product ? HttpResponse.json(product) : notFound("Produit");
   }),
 
   http.post("/api/products", async ({ request }) => {
@@ -107,7 +105,6 @@ export const handlers = [
       { name: "category", type: "string", required: true },
     ]);
     if (validation) return validation;
-    await delay(API_DELAY);
     const newProduct = {
       ...p,
       id: `prod-${Math.random().toString(36).substring(7)}`,
@@ -115,6 +112,7 @@ export const handlers = [
       updatedAt: new Date().toISOString(),
     } as (typeof db.products)[number];
     db.products.push(newProduct);
+    await delay(API_DELAY);
     return HttpResponse.json(newProduct);
   }),
 
@@ -122,29 +120,33 @@ export const handlers = [
     const admin = requireAdmin(request);
     if (admin instanceof HttpResponse) return admin;
     const p = (await request.json()) as Record<string, unknown>;
-    await delay(API_DELAY);
     const idx = db.products.findIndex((x) => x.id === params.id);
-    if (idx > -1) {
-      db.products[idx] = {
-        ...db.products[idx],
-        ...p,
-        updatedAt: new Date().toISOString(),
-      } as (typeof db.products)[number];
-      return HttpResponse.json(db.products[idx]);
-    }
-    return new HttpResponse(null, { status: 404 });
+    if (idx === -1) return notFound("Produit");
+    db.products[idx] = {
+      ...db.products[idx],
+      ...p,
+      updatedAt: new Date().toISOString(),
+    } as (typeof db.products)[number];
+    await delay(API_DELAY);
+    return HttpResponse.json(db.products[idx]);
   }),
 
   http.delete("/api/products/:id", async ({ params, request }) => {
     const admin = requireAdmin(request);
     if (admin instanceof HttpResponse) return admin;
-    await delay(API_DELAY);
     const idx = db.products.findIndex((x) => x.id === params.id);
-    if (idx > -1) {
-      db.products.splice(idx, 1);
-      return new HttpResponse(null, { status: 204 });
+    if (idx === -1) return notFound("Produit");
+    const productId = params.id as string;
+    db.products.splice(idx, 1);
+    db.reviews = db.reviews.filter((r) => r.productId !== productId);
+    for (const key of Object.keys(db.carts)) {
+      db.carts[key].items = db.carts[key].items.filter((i) => i.productId !== productId);
     }
-    return new HttpResponse(null, { status: 404 });
+    for (const key of Object.keys(db.wishlists)) {
+      db.wishlists[key] = db.wishlists[key].filter((w) => w.productId !== productId);
+    }
+    await delay(API_DELAY);
+    return new HttpResponse(null, { status: 204 });
   }),
 
   // Reviews
@@ -158,7 +160,6 @@ export const handlers = [
     const auth = requireAuth(request);
     if (auth instanceof HttpResponse) return auth;
     const { rating, comment } = (await request.json()) as { rating: number; comment: string };
-    await delay(API_DELAY);
     const newReview = {
       id: `rev-${Date.now()}`,
       productId: params.id as string,
@@ -169,6 +170,7 @@ export const handlers = [
       createdAt: new Date().toISOString(),
     };
     db.reviews.push(newReview);
+    await delay(API_DELAY);
     return HttpResponse.json(newReview);
   }),
 

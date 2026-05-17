@@ -54,16 +54,26 @@ export function AdminOrders() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.orders.list().then(({ data }) => {
-      setOrders(data);
-      setLoading(false);
-    });
+    api.orders
+      .list()
+      .then(({ data }) => {
+        setOrders(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        toast.error("Erreur lors du chargement des commandes");
+        setLoading(false);
+      });
   }, []);
 
   const updateStatus = async (id: string, status: Order["status"]) => {
-    await api.orders.updateStatus(id, status);
-    setOrders(orders.map((o) => (o.id === id ? { ...o, status } : o)));
-    toast.success(`Statut de la commande ${id} mis à jour`);
+    try {
+      await api.orders.updateStatus(id, status);
+      setOrders(orders.map((o) => (o.id === id ? { ...o, status } : o)));
+      toast.success(`Statut de la commande ${id} mis à jour`);
+    } catch {
+      toast.error("Erreur lors de la mise à jour du statut");
+    }
   };
 
   const columns: ColumnDef<Order>[] = [

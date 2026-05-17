@@ -11,13 +11,10 @@ export function Navbar() {
   const [q, setQ] = useState("");
   const navigate = useNavigate();
   const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== "undefined") {
-      return (
-        document.documentElement.classList.contains("dark") ||
-        localStorage.getItem("theme") === "dark"
-      );
-    }
-    return false;
+    return (
+      document.documentElement.classList.contains("dark") ||
+      localStorage.getItem("theme") === "dark"
+    );
   });
 
   useEffect(() => {
@@ -59,9 +56,9 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          {links.map((l, i) => (
+          {links.map((l) => (
             <Link
-              key={i}
+              key={l.to}
               to={l.to}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
@@ -121,9 +118,9 @@ export function Navbar() {
 
       {open && (
         <div className="md:hidden border-t border-border/60 px-4 py-3 space-y-2">
-          {links.map((l, i) => (
+          {links.map((l) => (
             <Link
-              key={i}
+              key={l.to}
               to={l.to}
               onClick={() => setOpen(false)}
               className="block text-sm font-medium text-foreground py-2"

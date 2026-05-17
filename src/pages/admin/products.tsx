@@ -71,7 +71,7 @@ export function AdminProducts() {
         setProducts(productRes.data);
         setCategories(c);
       } catch {
-        /* empty */
+        toast.error("Erreur lors du chargement des produits");
       } finally {
         setLoading(false);
       }

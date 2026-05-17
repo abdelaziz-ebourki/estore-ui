@@ -46,7 +46,7 @@ export function AdminCategories() {
         setCategories(c);
         setProducts(productRes.data);
       } catch {
-        /* empty */
+        toast.error("Erreur lors du chargement des catégories");
       } finally {
         setLoading(false);
       }

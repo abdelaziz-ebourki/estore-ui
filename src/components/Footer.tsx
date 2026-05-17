@@ -12,7 +12,7 @@ export function Footer() {
     api.categories
       .list()
       .then(setCategories)
-      .catch(() => {});
+      .catch(() => console.error("Échec du chargement des catégories"));
   }, []);
 
   return (
@@ -75,7 +75,7 @@ export function Footer() {
               {categories.map((category) => (
                 <li key={category.id}>
                   <Link
-                    to={`/products?category=${category.name}`}
+                    to={`/products?category=${category.slug}`}
                     className="text-muted-foreground hover:text-foreground transition"
                   >
                     {category.name}
