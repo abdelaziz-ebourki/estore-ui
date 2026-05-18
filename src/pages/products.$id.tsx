@@ -114,11 +114,16 @@ export function ProductDetailPage() {
     if (reviewRating === 0 || !reviewComment.trim() || !product) return;
     setSubmitting(true);
     try {
-      const newReview = await api.products.reviews.add(product.id, reviewRating, reviewComment);
-      setReviews((prev) => [newReview, ...prev]);
+      const review = await api.products.reviews.add(product.id, reviewRating, reviewComment);
+      if (isEditing) {
+        setReviews((prev) => prev.map((r) => (r.userId === user?.email ? review : r)));
+        toast.success("Avis mis à jour !");
+      } else {
+        setReviews((prev) => [review, ...prev]);
+        toast.success("Avis publié !");
+      }
       setReviewRating(0);
       setReviewComment("");
-      toast.success("Avis publié !");
     } catch (err) {
       if (err instanceof Response && err.status === 403) {
         toast.error("Vous devez acheter ce produit avant de laisser un avis");
@@ -129,6 +134,18 @@ export function ProductDetailPage() {
       setSubmitting(false);
     }
   };
+
+  const existingReview = useMemo(
+    () => reviews.find((r) => r.userId === user?.email) || null,
+    [reviews, user?.email],
+  );
+  const isEditing = !!existingReview;
+  useEffect(() => {
+    if (existingReview) {
+      setReviewRating(existingReview.rating);
+      setReviewComment(existingReview.comment);
+    }
+  }, [existingReview?.id]);
 
   const discount = product.oldPrice
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
@@ -363,7 +380,7 @@ export function ProductDetailPage() {
               className="gap-2"
             >
               {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              Publier
+              {isEditing ? "Mettre à jour" : "Publier"}
             </Button>
           </div>
           ) : (

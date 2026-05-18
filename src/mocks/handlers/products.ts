@@ -187,16 +187,25 @@ export const handlers = [
       );
     }
     const { rating, comment } = (await request.json()) as { rating: number; comment: string };
-    const newReview = {
-      id: `rev-${Date.now()}`,
-      productId: params.id as string,
-      userId: auth.sub,
-      userName: db.users.find((u) => u.email === auth.sub)?.name || auth.sub,
-      rating,
-      comment,
-      createdAt: new Date().toISOString(),
-    };
-    db.reviews.push(newReview);
+    const existing = db.reviews.find(
+      (r) => r.productId === params.id && r.userId === auth.sub,
+    );
+    if (existing) {
+      existing.rating = rating;
+      existing.comment = comment;
+      existing.createdAt = new Date().toISOString();
+    } else {
+      const newReview = {
+        id: `rev-${Date.now()}`,
+        productId: params.id as string,
+        userId: auth.sub,
+        userName: db.users.find((u) => u.email === auth.sub)?.name || auth.sub,
+        rating,
+        comment,
+        createdAt: new Date().toISOString(),
+      };
+      db.reviews.push(newReview);
+    }
     const allReviews = db.reviews.filter((r) => r.productId === params.id);
     const avg = allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length;
     const productIdx = db.products.findIndex((p) => p.id === params.id);
@@ -204,7 +213,7 @@ export const handlers = [
       db.products[productIdx].rating = Math.round(avg * 10) / 10;
     }
     await delay(API_DELAY);
-    return HttpResponse.json(newReview);
+    return HttpResponse.json(existing || db.reviews[db.reviews.length - 1]);
   }),
 
   // Upload
