@@ -39,6 +39,7 @@ export function ProductDetailPage() {
   const [reviewComment, setReviewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasPurchased, setHasPurchased] = useState(false);
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [currentImg, setCurrentImg] = useState(0);
@@ -65,6 +66,12 @@ export function ProductDetailPage() {
         setSimilarProducts(similarData.filter((p) => p.id !== productData.id).slice(0, 4));
         const reviewsData = await api.products.reviews.list(productData.id);
         setReviews(reviewsData);
+        if (user) {
+          const ordersRes = await api.orders.list();
+          setHasPurchased(
+            ordersRes.data.some((o) => o.items.some((i) => i.productId === productData.id)),
+          );
+        }
       } catch {
         setProduct(null);
         toast.error("Impossible de charger le produit");
@@ -112,8 +119,12 @@ export function ProductDetailPage() {
       setReviewRating(0);
       setReviewComment("");
       toast.success("Avis publié !");
-    } catch {
-      toast.error("Erreur lors de la publication");
+    } catch (err) {
+      if (err instanceof Response && err.status === 403) {
+        toast.error("Vous devez acheter ce produit avant de laisser un avis");
+      } else {
+        toast.error("Erreur lors de la publication");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -322,7 +333,8 @@ export function ProductDetailPage() {
         )}
 
         {user ? (
-          <div className="mt-10 p-8 rounded-2xl border border-border bg-card ">
+          hasPurchased ? (
+          <div className="mt-10 p-8 rounded-2xl border border-border bg-card max-w-xl">
             <h3 className="font-display font-bold mb-5">Donnez votre avis</h3>
             <div className="flex gap-1 mb-5">
               {[1, 2, 3, 4, 5].map((star) => (
@@ -354,6 +366,13 @@ export function ProductDetailPage() {
               Publier
             </Button>
           </div>
+          ) : (
+          <div className="mt-10 p-8 rounded-2xl border border-dashed border-border text-center max-w-xl">
+            <p className="text-muted-foreground">
+              Vous devez acheter ce produit avant de laisser un avis.
+            </p>
+          </div>
+          )
         ) : (
           <div className="mt-10 p-8 rounded-2xl border border-dashed border-border text-center max-w-xl">
             <p className="text-muted-foreground">

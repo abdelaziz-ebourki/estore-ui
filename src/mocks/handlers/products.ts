@@ -177,6 +177,15 @@ export const handlers = [
   http.post("/api/products/:id/reviews", async ({ params, request }) => {
     const auth = requireAuth(request);
     if (auth instanceof HttpResponse) return auth;
+    const hasPurchased = db.orders.some(
+      (o) => o.customerId === auth.sub && o.items.some((i) => i.productId === params.id),
+    );
+    if (!hasPurchased) {
+      return HttpResponse.json(
+        { error: "Vous devez acheter ce produit avant de laisser un avis" },
+        { status: 403 },
+      );
+    }
     const { rating, comment } = (await request.json()) as { rating: number; comment: string };
     const newReview = {
       id: `rev-${Date.now()}`,
@@ -188,6 +197,12 @@ export const handlers = [
       createdAt: new Date().toISOString(),
     };
     db.reviews.push(newReview);
+    const allReviews = db.reviews.filter((r) => r.productId === params.id);
+    const avg = allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length;
+    const productIdx = db.products.findIndex((p) => p.id === params.id);
+    if (productIdx !== -1) {
+      db.products[productIdx].rating = Math.round(avg * 10) / 10;
+    }
     await delay(API_DELAY);
     return HttpResponse.json(newReview);
   }),
