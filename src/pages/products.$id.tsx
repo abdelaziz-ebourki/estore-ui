@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Star, ShoppingCart, Truck, Shield, Loader2, MessageSquare } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
@@ -87,6 +87,26 @@ export function ProductDetailPage() {
     [product?.images],
   );
 
+  const existingReview = useMemo(
+    () => reviews.find((r) => r.userId === user?.email) || null,
+    [reviews, user?.email],
+  );
+  const isEditing = !!existingReview;
+  const hasPrefilled = useRef(false);
+  useEffect(() => {
+    hasPrefilled.current = false;
+    setReviewRating(0);
+    setReviewComment("");
+    setHasPurchased(false);
+  }, [id]);
+  useEffect(() => {
+    if (existingReview && !hasPrefilled.current) {
+      setReviewRating(existingReview.rating);
+      setReviewComment(existingReview.comment);
+      hasPrefilled.current = true;
+    }
+  }, [existingReview?.id]);
+
   if (isLoading) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
@@ -134,18 +154,6 @@ export function ProductDetailPage() {
       setSubmitting(false);
     }
   };
-
-  const existingReview = useMemo(
-    () => reviews.find((r) => r.userId === user?.email) || null,
-    [reviews, user?.email],
-  );
-  const isEditing = !!existingReview;
-  useEffect(() => {
-    if (existingReview) {
-      setReviewRating(existingReview.rating);
-      setReviewComment(existingReview.comment);
-    }
-  }, [existingReview?.id]);
 
   const discount = product.oldPrice
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
