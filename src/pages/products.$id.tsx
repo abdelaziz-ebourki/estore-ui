@@ -244,7 +244,7 @@ export function ProductDetailPage() {
           <div className="flex items-center gap-4 mb-8">
             <div className="flex items-center gap-1 bg-amber-400/10 text-amber-600 px-3 py-1 rounded-full text-sm font-bold">
               <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-              {product.rating}
+              {product.rating > 0 ? product.rating : "—"}
             </div>
             <div
               className={cn(
@@ -318,6 +318,7 @@ export function ProductDetailPage() {
         <h2 className="font-display text-3xl font-black mb-10 flex items-center gap-3">
           <MessageSquare className="h-6 w-6 text-primary" />
           Avis clients ({reviews.length})
+          <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
         </h2>
 
         {reviews.length === 0 ? (

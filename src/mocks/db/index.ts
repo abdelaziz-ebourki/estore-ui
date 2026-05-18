@@ -20,8 +20,6 @@ export const db = {
 // Recalibrate product ratings from seed reviews
 for (const product of db.products) {
   const productReviews = db.reviews.filter((r) => r.productId === product.id);
-  if (productReviews.length > 0) {
-    const avg = productReviews.reduce((s, r) => s + r.rating, 0) / productReviews.length;
-    product.rating = Math.round(avg * 10) / 10;
-  }
+  const avg = productReviews.reduce((s, r) => s + r.rating, 0) / (productReviews.length || 1);
+  product.rating = productReviews.length > 0 ? Math.round(avg * 10) / 10 : 0;
 }

@@ -52,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
           <span>{product.brand}</span>
           <div className="flex items-center gap-0.5 text-amber-400">
             <Star className="h-3 w-3 fill-amber-400" />
-            <span>{product.rating}</span>
+            <span>{product.rating > 0 ? product.rating : "—"}</span>
           </div>
         </div>
 
