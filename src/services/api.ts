@@ -74,7 +74,7 @@ export const api = {
     register: (firstName: string, lastName: string, email: string, password: string) =>
       request<{ token: string; role: string; user: User }>("/api/auth/register", {
         method: "POST",
-        body: JSON.stringify({ name: `${firstName} ${lastName}`, email, password }),
+        body: JSON.stringify({ firstName, lastName, email, password }),
       }),
     me: () => request<{ user: User; role: string }>("/api/auth/me"),
     changePassword: (currentPassword: string, newPassword: string) =>
@@ -143,7 +143,7 @@ export const api = {
       request<PaginatedResponse<User>>(`/api/users?${buildQuery(params)}`),
     updateStatus: (id: string, status: User["status"]) =>
       request<User>(`/api/users/${id}`, { method: "PATCH", body: JSON.stringify({ status }) }),
-    updateProfile: (body: { name?: string }) =>
+    updateProfile: (body: { firstName?: string; lastName?: string }) =>
       request<User>("/api/users/me", { method: "PATCH", body: JSON.stringify(body) }),
   },
   orders: {

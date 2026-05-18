@@ -3,7 +3,8 @@ import type { User } from "@/types";
 export const users: User[] = [
   {
     id: "user-1",
-    name: "Jean Dupont",
+    firstName: "Jean",
+    lastName: "Dupont",
     email: "jean.dupont@example.com",
     password: "12345678",
     orders: 4,
@@ -13,7 +14,8 @@ export const users: User[] = [
   },
   {
     id: "user-2",
-    name: "Marie Curie",
+    firstName: "Marie",
+    lastName: "Curie",
     email: "marie.curie@example.com",
     password: "12345678",
     orders: 1,
@@ -23,7 +25,8 @@ export const users: User[] = [
   },
   {
     id: "user-3",
-    name: "Lucas Bernard",
+    firstName: "Lucas",
+    lastName: "Bernard",
     email: "lucas.b@example.com",
     password: "12345678",
     orders: 1,
@@ -33,7 +36,8 @@ export const users: User[] = [
   },
   {
     id: "user-4",
-    name: "Sophie Martin",
+    firstName: "Sophie",
+    lastName: "Martin",
     email: "sophie.martin@example.com",
     password: "12345678",
     orders: 1,
@@ -43,7 +47,8 @@ export const users: User[] = [
   },
   {
     id: "user-5",
-    name: "Thomas Petit",
+    firstName: "Thomas",
+    lastName: "Petit",
     email: "thomas.petit@example.com",
     password: "12345678",
     orders: 0,

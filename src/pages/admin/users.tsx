@@ -39,7 +39,8 @@ export function AdminUsers() {
 
   const columns: ColumnDef<User>[] = [
     {
-      accessorKey: "name",
+      accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+      id: "name",
       header: ({ column }) => (
         <button
           className="flex items-center gap-1 font-semibold"
@@ -52,11 +53,13 @@ export function AdminUsers() {
         <div className="flex items-center gap-4">
           <Avatar className="h-10 w-10 border">
             <AvatarFallback className="bg-primary/5 text-primary font-bold text-xs">
-              {row.original.name.substring(0, 2).toUpperCase()}
+              {(row.original.firstName[0] || "") + (row.original.lastName[0] || "").toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <div className="font-bold text-sm">{row.original.name}</div>
+            <div className="font-bold text-sm">
+              {row.original.firstName} {row.original.lastName}
+            </div>
             <div className="text-xs text-muted-foreground">{row.original.email}</div>
           </div>
         </div>

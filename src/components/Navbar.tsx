@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, Search, User, Menu, Zap, Sun, Moon } from "lucide-react";
+import { ShoppingCart, Search, User, Menu, Zap, Sun, Moon, LogIn } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const { count } = useCart();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const navigate = useNavigate();
@@ -90,12 +92,21 @@ export function Navbar() {
             {isDark ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5" />}
           </Button>
 
-          <Link
-            to="/profile"
-            className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition"
-          >
-            <User className="h-5 w-5" />
-          </Link>
+          {user ? (
+            <Link
+              to="/profile"
+              className="hidden md:inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition"
+            >
+              <User className="h-4 w-4" /> Mon compte
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="hidden md:inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-medium text-primary hover:bg-primary/10 transition"
+            >
+              <LogIn className="h-4 w-4" /> Connexion
+            </Link>
+          )}
           <Link
             to="/cart"
             className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition"
@@ -128,13 +139,23 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link
-            to="/profile"
-            onClick={() => setOpen(false)}
-            className="block text-sm font-medium text-foreground py-2"
-          >
-            Mon profil
-          </Link>
+          {user ? (
+            <Link
+              to="/profile"
+              onClick={() => setOpen(false)}
+              className="block text-sm font-medium text-foreground py-2"
+            >
+              Mon profil
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setOpen(false)}
+              className="block text-sm font-medium text-primary py-2"
+            >
+              Connexion
+            </Link>
+          )}
         </div>
       )}
     </header>

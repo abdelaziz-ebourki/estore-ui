@@ -108,8 +108,10 @@ export function AdminProducts() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const categoryId = categories.find((c) => c.name === form.category)?.id || "";
       const payload = {
         ...form,
+        categoryId,
         images: [form.mainImage, ...form.images.filter((i) => i !== form.mainImage)],
       };
       if (editingProduct) {

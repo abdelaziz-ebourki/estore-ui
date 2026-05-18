@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
 import { Mail, Lock, Loader2, Zap, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -21,9 +22,10 @@ export function LoginPage() {
     setLoading(true);
     try {
       const data = await api.auth.login(email, password);
-      login(data.role, data.user);
-      toast.success(`Connexion réussie en tant que ${data.role}`);
-      navigate(data.role === "admin" ? "/admin" : "/");
+      login(data.role as "admin" | "customer", data.user);
+      toast.success(`Bonjour ${data.user?.firstName || ""} !`);
+      const redirect = searchParams.get("redirect") || (data.role === "admin" ? "/admin" : "/");
+      navigate(redirect);
     } catch {
       toast.error("Erreur lors de la connexion");
     } finally {
@@ -96,6 +98,15 @@ export function LoginPage() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-muted-foreground hover:text-primary transition"
+            >
+              Mot de passe oublié ?
+            </Link>
           </div>
 
           <Button

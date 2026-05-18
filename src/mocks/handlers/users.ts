@@ -31,7 +31,7 @@ export const handlers = [
   http.patch("/api/users/me", async ({ request }) => {
     const auth = requireAuth(request);
     if (auth instanceof HttpResponse) return auth;
-    const body = (await request.json()) as { name?: string };
+    const body = (await request.json()) as { firstName?: string; lastName?: string };
     const idx = db.users.findIndex((u) => u.email === auth.sub);
     if (idx === -1) return notFound("Utilisateur");
     db.users[idx] = { ...db.users[idx], ...body } as (typeof db.users)[number];

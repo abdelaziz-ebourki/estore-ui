@@ -12,13 +12,13 @@ function getUserFromToken(request: Request): { sub: string; role: string } | nul
   }
 }
 
-export function requireAuth(request: Request): { sub: string; role: string } | HttpResponse {
+export function requireAuth(request: Request): { sub: string; role: string } | HttpResponse<any> {
   const user = getUserFromToken(request);
   if (!user) return HttpResponse.json({ error: "Non authentifié" }, { status: 401 });
   return user;
 }
 
-export function requireAdmin(request: Request): { sub: string; role: string } | HttpResponse {
+export function requireAdmin(request: Request): { sub: string; role: string } | HttpResponse<any> {
   const result = requireAuth(request);
   if (result instanceof HttpResponse) return result;
   if (result.role !== "admin") return HttpResponse.json({ error: "Accès refusé" }, { status: 403 });
@@ -42,8 +42,9 @@ export const handlers = [
   }),
 
   http.post("/api/auth/register", async ({ request }) => {
-    const { name, email, password } = (await request.json()) as {
-      name: string;
+    const { firstName, lastName, email, password } = (await request.json()) as {
+      firstName: string;
+      lastName: string;
       email: string;
       password: string;
     };
@@ -53,7 +54,8 @@ export const handlers = [
     }
     const newUser = {
       id: `user-${Date.now()}`,
-      name,
+      firstName,
+      lastName,
       email,
       password,
       orders: 0,

@@ -48,7 +48,7 @@ function initials(name: string) {
 export function AdminLayout() {
   const location = useLocation();
   const { user } = useAuth();
-  const displayName = user?.name || "Admin";
+  const displayName = user ? `${user.firstName} ${user.lastName}` : "Admin";
   const displayInitials = initials(displayName);
 
   return (

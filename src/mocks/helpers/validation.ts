@@ -5,7 +5,7 @@ type FieldCheck = { name: string; type?: "string" | "number" | "boolean"; requir
 export function validateBody(
   body: Record<string, unknown>,
   fields: FieldCheck[],
-): HttpResponse | null {
+): HttpResponse<any> | null {
   const errors: Record<string, string[]> = {};
   for (const field of fields) {
     const value = body[field.name];

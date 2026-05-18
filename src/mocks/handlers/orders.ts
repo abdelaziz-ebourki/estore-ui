@@ -72,12 +72,15 @@ export const handlers = [
     if (orderItems.includes(null)) {
       return notFound("Produit");
     }
-    const validItems = orderItems as NonNullable<(typeof orderItems)[number]>;
+    const validItems = orderItems.filter((item): item is NonNullable<typeof item> => item !== null);
     const total = validItems.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
     const newOrder = {
       id: `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
       customerId: auth.sub,
-      customerName: db.users.find((u) => u.email === auth.sub)?.name || auth.sub,
+      customerName: (() => {
+        const u = db.users.find((u) => u.email === auth.sub);
+        return u ? `${u.firstName} ${u.lastName}` : auth.sub;
+      })(),
       items: validItems,
       itemCount: validItems.reduce((sum, i) => sum + i.quantity, 0),
       total,

@@ -34,7 +34,7 @@ export function MarkdownEditor({ value, onChange, placeholder }: MarkdownEditorP
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
-      onChange(editor.storage.markdown.getMarkdown());
+      onChange((editor.storage.markdown as unknown as { getMarkdown: () => string }).getMarkdown());
     },
     editorProps: {
       attributes: {

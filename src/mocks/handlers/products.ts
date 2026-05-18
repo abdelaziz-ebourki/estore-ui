@@ -201,7 +201,7 @@ export const handlers = [
         id: `rev-${Date.now()}`,
         productId: params.id as string,
         userId,
-        userName: user?.name || auth.sub,
+        userName: user ? `${user.firstName} ${user.lastName}` : auth.sub,
         rating,
         comment,
         createdAt: new Date().toISOString(),

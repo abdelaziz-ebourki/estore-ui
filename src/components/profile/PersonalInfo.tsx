@@ -16,9 +16,8 @@ export function PersonalInfo({
   onUpdate: (u: Partial<User>) => void;
 }) {
   const [saving, setSaving] = useState(false);
-  const nameParts = (user?.name || "").split(" ");
-  const [firstName, setFirstName] = useState(nameParts[0] || "");
-  const [lastName, setLastName] = useState(nameParts.slice(1).join(" "));
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
   const [changingPassword, setChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -27,7 +26,7 @@ export function PersonalInfo({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updated = await api.users.updateProfile({ name: `${firstName} ${lastName}`.trim() });
+      const updated = await api.users.updateProfile({ firstName, lastName });
       onUpdate(updated);
       toast.success("Profil mis à jour");
     } catch {

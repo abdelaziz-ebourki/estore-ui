@@ -15,6 +15,7 @@ export function RegisterPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -22,6 +23,10 @@ export function RegisterPage() {
     e.preventDefault();
     if (!firstName.trim() || !lastName.trim()) {
       toast.error("Veuillez renseigner votre prénom et nom");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
       return;
     }
     setLoading(true);
@@ -136,6 +141,27 @@ export function RegisterPage() {
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="confirmPassword"
+              className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1"
+            >
+              Confirmer le mot de passe
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="rounded-2xl border-border bg-background pl-10 pr-10 h-12 focus-visible:ring-primary/20 transition-all"
+              />
             </div>
           </div>
 
