@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { type Product } from "@/types";
 import { api } from "@/services/api";
@@ -7,23 +7,48 @@ export function useProductFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const cat = searchParams.get("category") || "";
   const q = searchParams.get("q") || "";
   const minDiscount = Number(searchParams.get("minDiscount")) || 0;
-  const [selectedBrands, setBrands] = useState<string[]>([]);
-  const [price, setPrice] = useState<[number, number]>([0, 2500]);
-  const [minRating, setMinRating] = useState(0);
+  const [selectedBrands, setBrands] = useState<string[]>(
+    searchParams.get("brands")?.split(",").filter(Boolean) || [],
+  );
+  const [price, setPrice] = useState<[number, number]>([
+    Number(searchParams.get("minPrice")) || 0,
+    Number(searchParams.get("maxPrice")) || 2500,
+  ]);
+  const [minRating, setMinRating] = useState(Number(searchParams.get("minRating")) || 0);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
+  const loadProducts = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
       const { data } = await api.products.list();
       setAllProducts(data);
+    } catch {
+      setError("Impossible de charger les produits");
+    } finally {
       setIsLoading(false);
-    };
-    fetchProducts();
+    }
   }, []);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
+
+  useEffect(() => {
+    setSearchParams((prev) => {
+      if (selectedBrands.length > 0) prev.set("brands", selectedBrands.join(","));
+      else prev.delete("brands");
+      prev.set("minPrice", String(price[0]));
+      prev.set("maxPrice", String(price[1]));
+      if (minRating > 0) prev.set("minRating", String(minRating));
+      else prev.delete("minRating");
+      return prev;
+    });
+  }, [selectedBrands, price, minRating, setSearchParams]);
 
   const filtered = useMemo(() => {
     const term = (q || "").toLowerCase().trim();
@@ -60,6 +85,8 @@ export function useProductFilters() {
   return {
     filtered,
     isLoading,
+    error,
+    loadProducts,
     filters: {
       cat,
       setCat,
