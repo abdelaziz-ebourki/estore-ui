@@ -88,8 +88,8 @@ export function ProductDetailPage() {
   );
 
   const existingReview = useMemo(
-    () => reviews.find((r) => r.userId === user?.email) || null,
-    [reviews, user?.email],
+    () => reviews.find((r) => r.userId === user?.email || r.userId === user?.id) || null,
+    [reviews, user?.email, user?.id],
   );
   const isEditing = !!existingReview;
   const hasPrefilled = useRef(false);
@@ -136,7 +136,7 @@ export function ProductDetailPage() {
     try {
       const review = await api.products.reviews.add(product.id, reviewRating, reviewComment);
       if (isEditing) {
-        setReviews((prev) => prev.map((r) => (r.userId === user?.email ? review : r)));
+        setReviews((prev) => prev.map((r) => (r.userId === user?.email || r.userId === user?.id ? review : r)));
         toast.success("Avis mis à jour !");
       } else {
         setReviews((prev) => [review, ...prev]);
@@ -359,44 +359,44 @@ export function ProductDetailPage() {
 
         {user ? (
           hasPurchased ? (
-          <div className="mt-10 p-8 rounded-2xl border border-border bg-card max-w-xl">
-            <h3 className="font-display font-bold mb-5">Donnez votre avis</h3>
-            <div className="flex gap-1 mb-5">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setReviewRating(star)}
-                  className="transition-colors"
-                >
-                  <Star
-                    className={`h-7 w-7 ${star <= reviewRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30 hover:text-amber-400/50"}`}
-                  />
-                </button>
-              ))}
+            <div className="mt-10 p-8 rounded-2xl border border-border bg-card max-w-xl">
+              <h3 className="font-display font-bold mb-5">Donnez votre avis</h3>
+              <div className="flex gap-1 mb-5">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setReviewRating(star)}
+                    className="transition-colors"
+                  >
+                    <Star
+                      className={`h-7 w-7 ${star <= reviewRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30 hover:text-amber-400/50"}`}
+                    />
+                  </button>
+                ))}
+              </div>
+              <Textarea
+                placeholder="Partagez votre expérience..."
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                className="mb-5"
+                rows={4}
+              />
+              <Button
+                onClick={handleSubmitReview}
+                disabled={submitting || reviewRating === 0 || !reviewComment.trim()}
+                className="gap-2"
+              >
+                {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isEditing ? "Mettre à jour" : "Publier"}
+              </Button>
             </div>
-            <Textarea
-              placeholder="Partagez votre expérience..."
-              value={reviewComment}
-              onChange={(e) => setReviewComment(e.target.value)}
-              className="mb-5"
-              rows={4}
-            />
-            <Button
-              onClick={handleSubmitReview}
-              disabled={submitting || reviewRating === 0 || !reviewComment.trim()}
-              className="gap-2"
-            >
-              {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-              {isEditing ? "Mettre à jour" : "Publier"}
-            </Button>
-          </div>
           ) : (
-          <div className="mt-10 p-8 rounded-2xl border border-dashed border-border text-center max-w-xl">
-            <p className="text-muted-foreground">
-              Vous devez acheter ce produit avant de laisser un avis.
-            </p>
-          </div>
+            <div className="mt-10 p-8 rounded-2xl border border-dashed border-border text-center max-w-xl">
+              <p className="text-muted-foreground">
+                Vous devez acheter ce produit avant de laisser un avis.
+              </p>
+            </div>
           )
         ) : (
           <div className="mt-10 p-8 rounded-2xl border border-dashed border-border text-center max-w-xl">

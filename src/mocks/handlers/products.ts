@@ -186,9 +186,11 @@ export const handlers = [
         { status: 403 },
       );
     }
+    const user = db.users.find((u) => u.email === auth.sub);
+    const userId = user?.id || auth.sub;
     const { rating, comment } = (await request.json()) as { rating: number; comment: string };
     const existing = db.reviews.find(
-      (r) => r.productId === params.id && r.userId === auth.sub,
+      (r) => r.productId === params.id && (r.userId === userId || r.userId === auth.sub),
     );
     if (existing) {
       existing.rating = rating;
@@ -198,8 +200,8 @@ export const handlers = [
       const newReview = {
         id: `rev-${Date.now()}`,
         productId: params.id as string,
-        userId: auth.sub,
-        userName: db.users.find((u) => u.email === auth.sub)?.name || auth.sub,
+        userId,
+        userName: user?.name || auth.sub,
         rating,
         comment,
         createdAt: new Date().toISOString(),
