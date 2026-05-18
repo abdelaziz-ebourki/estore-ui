@@ -1,16 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Star, ShoppingCart, Truck, Shield, Loader2 } from "lucide-react";
+import { Star, ShoppingCart, Truck, Shield, Loader2, MessageSquare } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import type { Product } from "@/types";
+import type { Product, Review } from "@/types";
 import { api } from "@/services/api";
 import { ProductCard } from "@/components/ProductCard";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -28,8 +31,13 @@ export function ProductDetailPage() {
   const navigate = useNavigate();
   const { add } = useCart();
 
+  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
@@ -48,20 +56,29 @@ export function ProductDetailPage() {
     const load = async () => {
       setIsLoading(true);
       try {
-        const [productData, allProductsRes] = await Promise.all([
-          api.products.get(id!),
-          api.products.list(),
-        ]);
+        const productData = await api.products.get(id!);
         setProduct(productData);
-        setAllProducts(allProductsRes.data);
+        const { data: similarData } = await api.products.list({
+          category: productData.categoryId,
+          limit: 5,
+        });
+        setSimilarProducts(similarData.filter((p) => p.id !== productData.id).slice(0, 4));
+        const reviewsData = await api.products.reviews.list(productData.id);
+        setReviews(reviewsData);
       } catch {
         setProduct(null);
+        toast.error("Impossible de charger le produit");
       } finally {
         setIsLoading(false);
       }
     };
     if (id) load();
   }, [id]);
+
+  const slides = useMemo(
+    () => (product ? product.images.map((src) => ({ src })) : []),
+    [product?.images],
+  );
 
   if (isLoading) {
     return (
@@ -86,15 +103,25 @@ export function ProductDetailPage() {
     );
   }
 
+  const handleSubmitReview = async () => {
+    if (reviewRating === 0 || !reviewComment.trim() || !product) return;
+    setSubmitting(true);
+    try {
+      const newReview = await api.products.reviews.add(product.id, reviewRating, reviewComment);
+      setReviews((prev) => [newReview, ...prev]);
+      setReviewRating(0);
+      setReviewComment("");
+      toast.success("Avis publié !");
+    } catch {
+      toast.error("Erreur lors de la publication");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const discount = product.oldPrice
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0;
-
-  const similar = allProducts
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
-
-  const slides = product.images.map((src) => ({ src }));
 
   return (
     <div className="mx-auto max-w-7xl px-4 md:px-6 py-10">
@@ -150,7 +177,7 @@ export function ProductDetailPage() {
           </div>
 
           {/* Thumbnails */}
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-3 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden">
             {product.images.map((img, i) => (
               <button
                 key={i}
@@ -210,7 +237,7 @@ export function ProductDetailPage() {
           </div>
 
           <p className="text-muted-foreground text-lg leading-relaxed mb-6 border-l-4 border-primary/20 pl-6 italic">
-            "{product.description}"
+            &ldquo;{product.description}&rdquo;
           </p>
 
           {product.descriptionMarkdown && (
@@ -222,25 +249,28 @@ export function ProductDetailPage() {
           )}
 
           <div className="grid sm:grid-cols-2 gap-4 mb-12">
-            <button
+            <Button
+              size="lg"
               onClick={() => {
                 add(product);
                 toast.success(`${product.name} ajouté au panier`);
               }}
-              className="h-16 flex items-center justify-center gap-3 rounded-2xl bg-primary text-primary-foreground text-lg font-bold shadow-[--shadow-elegant] hover:bg-primary-glow transition-all active:scale-95 group"
+              className="h-16 rounded-2xl text-lg font-bold gap-3 shadow-[--shadow-elegant] active:scale-95"
             >
-              <ShoppingCart className="h-6 w-6 group-hover:animate-bounce" />
+              <ShoppingCart className="h-6 w-6" />
               Ajouter au panier
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
               onClick={() => {
                 add(product);
                 navigate("/cart");
               }}
-              className="h-16 flex items-center justify-center rounded-2xl border-2 border-border bg-background text-foreground text-lg font-bold hover:bg-accent transition-all active:scale-95"
+              className="h-16 rounded-2xl text-lg font-bold border-2 active:scale-95"
             >
               Acheter maintenant
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-10">
@@ -255,35 +285,95 @@ export function ProductDetailPage() {
               <div className="text-xs text-muted-foreground">Remplacement à neuf</div>
             </div>
           </div>
-
-          <div className="rounded-3xl border border-border bg-card p-8">
-            <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-primary" />
-              Spécifications techniques
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
-              {product.specs.map((s) => (
-                <div
-                  key={s.label}
-                  className="flex justify-between items-center border-b border-border/50 pb-2"
-                >
-                  <span className="text-muted-foreground text-sm font-medium">{s.label}</span>
-                  <span className="font-bold text-sm">{s.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 
-      {similar.length > 0 && (
-        <section className="mt-32">
+      {/* Reviews */}
+      <section className="mx-auto max-w-7xl px-4 md:px-6 py-16">
+        <h2 className="font-display text-3xl font-black mb-10 flex items-center gap-3">
+          <MessageSquare className="h-6 w-6 text-primary" />
+          Avis clients ({reviews.length})
+        </h2>
+
+        {reviews.length === 0 ? (
+          <p className="text-muted-foreground">Aucun avis pour le moment.</p>
+        ) : (
+          <div className="space-y-8 max-w-3xl">
+            {reviews.map((r) => (
+              <div key={r.id} className="border-b border-border/50 pb-6 last:border-0 last:pb-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Star
+                        key={star}
+                        className={`h-4 w-4 ${star <= r.rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`}
+                      />
+                    ))}
+                  </div>
+                  <span className="font-semibold text-sm">{r.userName}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(r.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">{r.comment}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {user ? (
+          <div className="mt-10 p-8 rounded-2xl border border-border bg-card ">
+            <h3 className="font-display font-bold mb-5">Donnez votre avis</h3>
+            <div className="flex gap-1 mb-5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setReviewRating(star)}
+                  className="transition-colors"
+                >
+                  <Star
+                    className={`h-7 w-7 ${star <= reviewRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30 hover:text-amber-400/50"}`}
+                  />
+                </button>
+              ))}
+            </div>
+            <Textarea
+              placeholder="Partagez votre expérience..."
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              className="mb-5"
+              rows={4}
+            />
+            <Button
+              onClick={handleSubmitReview}
+              disabled={submitting || reviewRating === 0 || !reviewComment.trim()}
+              className="gap-2"
+            >
+              {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              Publier
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-10 p-8 rounded-2xl border border-dashed border-border text-center max-w-xl">
+            <p className="text-muted-foreground">
+              <Link to="/login" className="text-primary font-semibold hover:underline">
+                Connectez-vous
+              </Link>{" "}
+              pour laisser un avis.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {similarProducts.length > 0 && (
+        <section className="mt-16">
           <div className="flex items-center gap-4 mb-10">
             <h2 className="font-display text-3xl font-black">Produits similaires</h2>
             <div className="h-px flex-1 bg-linear-to-r from-border to-transparent" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {similar.map((p) => (
+            {similarProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
