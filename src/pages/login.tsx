@@ -35,7 +35,7 @@ export function LoginPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-20 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="rounded-[2.5rem] border border-border bg-card p-10 shadow-[--shadow-elegant] relative overflow-hidden">
+      <div className="rounded-[2.5rem] border border-border bg-card p-10 shadow-(--shadow-elegant) relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1.5 bg-linear-to-r from-primary/50 via-primary to-primary/50" />
 
         <div className="flex flex-col items-center mb-8">

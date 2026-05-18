@@ -293,7 +293,7 @@ export function ProductDetailPage() {
                 add(product);
                 toast.success(`${product.name} ajouté au panier`);
               }}
-              className="h-16 rounded-2xl text-lg font-bold gap-3 shadow-[--shadow-elegant] active:scale-95"
+              className="h-16 rounded-2xl text-lg font-bold gap-3 shadow-(--shadow-elegant) active:scale-95"
             >
               <ShoppingCart className="h-6 w-6" />
               Ajouter au panier
