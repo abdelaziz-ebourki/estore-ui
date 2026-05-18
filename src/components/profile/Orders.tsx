@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ShoppingBag, Loader2, XCircle, RotateCcw } from "lucide-react";
+import { ShoppingBag, Loader2, XCircle, RotateCcw, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "@/services/api";
@@ -98,56 +98,63 @@ export function Orders() {
                   <TableCell>{order.total.toFixed(2)} €</TableCell>
                   <TableCell>{getStatusBadge(order.status)}</TableCell>
                   <TableCell className="text-right">
-                    {order.status !== "delivered" &&
-                      order.status !== "cancelled" &&
-                      order.status !== "return_requested" && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-destructive hover:text-destructive/90 gap-2"
-                            >
-                              <XCircle className="w-4 h-4" /> Annuler
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="rounded-3xl">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Annuler la commande ?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Cette action est irréversible. Êtes-vous sûr de vouloir annuler la
-                                commande {order.id} ?
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="rounded-2xl">Non</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleCancelOrder(order.id)}
-                                className="rounded-2xl bg-destructive hover:bg-destructive/90"
-                              >
-                                Oui, annuler
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                    {order.status === "delivered" && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-primary hover:text-primary/90 gap-2"
-                        asChild
-                      >
-                        <Link to={`/returns/request/${order.id}`}>
-                          <RotateCcw className="w-4 h-4" /> Effectuer un retour
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="ghost" size="sm" className="gap-1.5" asChild>
+                        <Link to={`/orders/${order.id}`}>
+                          <ExternalLink className="w-3.5 h-3.5" /> Suivre
                         </Link>
                       </Button>
-                    )}
-                    {order.status === "return_requested" && (
-                      <span className="text-xs font-bold text-muted-foreground italic">
-                        En attente de traitement
-                      </span>
-                    )}
+                      {order.status !== "delivered" &&
+                        order.status !== "cancelled" &&
+                        order.status !== "return_requested" && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive/90 gap-2"
+                              >
+                                <XCircle className="w-4 h-4" /> Annuler
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="rounded-3xl">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Annuler la commande ?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Cette action est irréversible. Êtes-vous sûr de vouloir annuler la
+                                  commande {order.id} ?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="rounded-2xl">Non</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleCancelOrder(order.id)}
+                                  className="rounded-2xl bg-destructive hover:bg-destructive/90"
+                                >
+                                  Oui, annuler
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      {order.status === "delivered" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-primary hover:text-primary/90 gap-2"
+                          asChild
+                        >
+                          <Link to={`/returns/request/${order.id}`}>
+                            <RotateCcw className="w-4 h-4" /> Retour
+                          </Link>
+                        </Button>
+                      )}
+                      {order.status === "return_requested" && (
+                        <span className="text-xs font-bold text-muted-foreground italic">
+                          En attente
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

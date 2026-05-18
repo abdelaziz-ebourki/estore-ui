@@ -77,6 +77,16 @@ export type Order = {
   updatedAt?: string;
   shippingAddress?: string;
   paymentMethod?: string;
+  tracking?: {
+    carrier: string;
+    number: string;
+    url?: string;
+  };
+  statusHistory?: {
+    status: OrderStatus;
+    timestamp: string;
+    location?: string;
+  }[];
 };
 
 export type DashboardStats = {

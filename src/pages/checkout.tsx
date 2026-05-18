@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { ShoppingBag, Truck, CreditCard, ShieldCheck, ArrowLeft, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { api } from "@/services/api";
 
 export function CheckoutPage() {
   const { items, total, clear } = useCart();
@@ -26,15 +27,21 @@ export function CheckoutPage() {
     );
   }
 
-  const handleOrder = (e: React.FormEvent) => {
+  const handleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Commande confirmée ! Merci de votre confiance.");
+    try {
+      await api.orders.create({
+        items: items.map((i) => ({ productId: i.product.id, quantity: i.qty })),
+      });
+      toast.success("Commande confirmée !");
       clear();
-      navigate("/");
-    }, 2000);
+      navigate("/orders");
+    } catch {
+      toast.error("Erreur lors de la commande");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
