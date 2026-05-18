@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Star, ShoppingCart, Truck, Shield, Loader2, MessageSquare } from "lucide-react";
+import { Star, ShoppingCart, Loader2, MessageSquare } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/styles.css";
@@ -136,7 +136,9 @@ export function ProductDetailPage() {
     try {
       const review = await api.products.reviews.add(product.id, reviewRating, reviewComment);
       if (isEditing) {
-        setReviews((prev) => prev.map((r) => (r.userId === user?.email || r.userId === user?.id ? review : r)));
+        setReviews((prev) =>
+          prev.map((r) => (r.userId === user?.email || r.userId === user?.id ? review : r)),
+        );
         toast.success("Avis mis à jour !");
       } else {
         setReviews((prev) => [review, ...prev]);
@@ -307,19 +309,6 @@ export function ProductDetailPage() {
             >
               Acheter maintenant
             </Button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-10">
-            <div className="flex flex-col gap-2 rounded-2xl border border-border p-4 bg-card/50">
-              <Truck className="h-6 w-6 text-primary" />
-              <div className="font-bold text-sm">Livraison express</div>
-              <div className="text-xs text-muted-foreground">Sous 24/48h chez vous</div>
-            </div>
-            <div className="flex flex-col gap-2 rounded-2xl border border-border p-4 bg-card/50">
-              <Shield className="h-6 w-6 text-primary" />
-              <div className="font-bold text-sm">Garantie 2 ans</div>
-              <div className="text-xs text-muted-foreground">Remplacement à neuf</div>
-            </div>
           </div>
         </div>
       </div>
