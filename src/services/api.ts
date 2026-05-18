@@ -96,6 +96,11 @@ export const api = {
       brand?: string;
       q?: string;
       inStock?: string;
+      minDiscount?: number;
+      minPrice?: number;
+      maxPrice?: number;
+      minRating?: number;
+      brands?: string;
     }) => request<PaginatedResponse<Product>>(`/api/products?${buildQuery(params)}`),
     popular: (limit = 8) => request<Product[]>(`/api/products/popular?limit=${limit}`),
     sales: (limit = 3) => request<Product[]>(`/api/products/sales?limit=${limit}`),

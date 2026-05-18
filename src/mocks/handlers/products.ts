@@ -14,6 +14,11 @@ export const handlers = [
     const brand = url.searchParams.get("brand") || "";
     const q = url.searchParams.get("q") || "";
     const inStock = url.searchParams.get("inStock");
+    const minDiscount = Number(url.searchParams.get("minDiscount")) || 0;
+    const minPrice = Number(url.searchParams.get("minPrice")) || 0;
+    const maxPrice = Number(url.searchParams.get("maxPrice")) || 0;
+    const minRating = Number(url.searchParams.get("minRating")) || 0;
+    const brands = url.searchParams.get("brands") || "";
 
     let filtered = [...db.products];
 
@@ -30,6 +35,19 @@ export const handlers = [
       );
     }
     if (inStock === "true") filtered = filtered.filter((p) => p.stock > 0);
+    if (minDiscount > 0) {
+      filtered = filtered.filter((p) => {
+        const d = p.oldPrice ? Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100) : 0;
+        return d >= minDiscount;
+      });
+    }
+    if (minPrice > 0) filtered = filtered.filter((p) => p.price >= minPrice);
+    if (maxPrice > 0) filtered = filtered.filter((p) => p.price <= maxPrice);
+    if (minRating > 0) filtered = filtered.filter((p) => p.rating >= minRating);
+    if (brands) {
+      const list = brands.split(",").map((b) => b.toLowerCase());
+      filtered = filtered.filter((p) => list.includes(p.brand.toLowerCase()));
+    }
 
     if (sort) {
       filtered.sort((a, b) => {
